@@ -1,0 +1,1 @@
+const fs=require('fs'); const file='D:/PROJECT/RT-RWNET_PAKAAM/frontend/src/app/(dashboard)/billing/invoices/[id]/page.tsx'; fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace('import api ', 'import { api } '));

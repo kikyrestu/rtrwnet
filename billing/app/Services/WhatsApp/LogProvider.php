@@ -1,0 +1,1 @@
+<?php namespace App\Services\WhatsApp; use Illuminate\Support\Facades\Log; class LogProvider implements WhatsAppProviderInterface  { public function sendMessage(string $phone, string $message): bool { Log::info("WA_LOG_MOCK -> To: {$phone} | Message: {$message}"); return true; } }
