@@ -7,7 +7,7 @@ import { api, formatRupiah } from '@/lib/api';
 import LocationPicker from '@/components/ui/LocationPicker';
 import { 
   User, Phone, MapPin, Wifi, Package, Router, ArrowLeft, 
-  Edit, Trash2, CheckCircle2, Clock, AlertCircle, Save, X
+  Edit, Trash2, CheckCircle2, Clock, AlertCircle, Save, X, Activity, RefreshCw, Key
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -57,6 +57,8 @@ export default function CustomerDetailPage() {
   const [form, setForm] = useState<any>({});
   const [saving, setSaving] = useState(false);
   const [options, setOptions] = useState<any>({ packages: [], routers: [], regions: [], dps: [] });
+  const [acsStatus, setAcsStatus] = useState<any>(null);
+  const [acsLoading, setAcsLoading] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -86,9 +88,70 @@ export default function CustomerDetailPage() {
           longitude: cust.longitude || '',
         });
       })
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [id]);
+
+  const fetchAcsStatus = async () => {
+    if (!customer?.ont_sn) return;
+    setAcsLoading(true);
+    try {
+      const res = await api.get(`/acs/device/${id}`);
+      setAcsStatus(res);
+    } catch (err) {
+      console.error("ACS Error", err);
+    } finally {
+      setAcsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (customer && customer.ont_sn) {
+      fetchAcsStatus();
+    }
+  }, [customer?.ont_sn]);
+
+  const handleAcsReboot = async () => {
+    if (!confirm('Reboot perangkat ONT pelanggan? Jaringan akan mati selama 1-2 menit.')) return;
+    try {
+      Swal.fire({ title: 'Mengirim Perintah...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      const res = await api.post(`/acs/device/${id}/reboot`);
+      Swal.fire({ title: 'Berhasil', text: res.message, icon: 'success' });
+    } catch (err: any) {
+      Swal.fire({ text: err.message || 'Gagal reboot', icon: 'error' });
+    }
+  };
+
+  const handleAcsWifi = async () => {
+    const { value: formValues } = await Swal.fire({
+      title: 'Ganti WiFi & Password',
+      html:
+        '<input id="swal-input1" class="swal2-input" placeholder="Nama WiFi (SSID)">' +
+        '<input id="swal-input2" class="swal2-input" placeholder="Password Baru" type="password">',
+      focusConfirm: false,
+      showCancelButton: true,
+      preConfirm: () => {
+        const ssid = (document.getElementById('swal-input1') as HTMLInputElement).value;
+        const pass = (document.getElementById('swal-input2') as HTMLInputElement).value;
+        if (!ssid || pass.length < 8) {
+          Swal.showValidationMessage('SSID wajib diisi dan Password minimal 8 karakter');
+          return false;
+        }
+        return { ssid, password: pass };
+      }
+    });
+
+    if (formValues) {
+      try {
+        Swal.fire({ title: 'Memproses Provisioning...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        const res = await api.put(`/acs/device/${id}/wifi`, formValues);
+        Swal.fire({ title: 'Berhasil', text: res.message, icon: 'success' });
+      } catch (err: any) {
+        Swal.fire({ text: err.message || 'Gagal mengubah WiFi', icon: 'error' });
+      }
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -325,6 +388,51 @@ export default function CustomerDetailPage() {
                <div><span className="text-gray-500 block mb-1 text-xs">Serial Number</span><strong className="text-gray-300 font-mono">{customer.ont_sn || '-'}</strong></div>
             </div>
           </div>
+          
+          {/* ACS TR-069 Card */}
+          {customer.ont_sn && (
+            <div className="md:col-span-2 bg-gradient-to-br from-indigo-900/30 to-purple-900/30 backdrop-blur-md border border-indigo-500/20 p-5 rounded-3xl space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-sm font-semibold text-indigo-300 uppercase tracking-wider flex items-center gap-2">
+                  <Activity size={16} /> Manajemen ONT (GenieACS TR-069)
+                </h3>
+                <button onClick={fetchAcsStatus} disabled={acsLoading} className="text-indigo-400 hover:text-indigo-300 transition-colors">
+                  <RefreshCw size={16} className={acsLoading ? 'animate-spin' : ''} />
+                </button>
+              </div>
+
+              {acsLoading && !acsStatus ? (
+                <div className="text-center py-4 text-gray-500 text-sm animate-pulse">Menghubungi GenieACS...</div>
+              ) : acsStatus ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-black/20 p-4 rounded-2xl border border-white/5 text-center">
+                    <p className="text-xs text-gray-400 mb-1">Redaman (Rx/Tx)</p>
+                    <p className="text-xl font-bold text-white">
+                      <span className={acsStatus.optical_rx < -25 ? 'text-red-400' : 'text-emerald-400'}>{acsStatus.optical_rx}</span>
+                      <span className="text-gray-500 text-sm font-normal mx-1">/</span>
+                      <span className="text-blue-400 text-sm">{acsStatus.optical_tx}</span>
+                    </p>
+                    <p className="text-[10px] text-gray-500 mt-1">dBm</p>
+                  </div>
+                  <div className="bg-black/20 p-4 rounded-2xl border border-white/5 text-center">
+                    <p className="text-xs text-gray-400 mb-1">Uptime</p>
+                    <p className="text-xl font-bold text-white">{acsStatus.uptime}</p>
+                    <p className="text-[10px] text-emerald-400 mt-1 uppercase font-bold tracking-wider">{acsStatus.status}</p>
+                  </div>
+                  <div className="bg-black/20 p-4 rounded-2xl border border-white/5 flex flex-col justify-center gap-2">
+                    <button onClick={handleAcsReboot} className="w-full py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-bold rounded-xl border border-red-500/20 transition-colors flex items-center justify-center gap-2">
+                      <RefreshCw size={12} /> Reboot Modem
+                    </button>
+                    <button onClick={handleAcsWifi} className="w-full py-2 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 text-xs font-bold rounded-xl border border-indigo-500/20 transition-colors flex items-center justify-center gap-2">
+                      <Key size={12} /> Ganti WiFi
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-4 text-red-400 text-sm">Gagal mengambil data dari ACS</div>
+              )}
+            </div>
+          )}
         </div>
       )}
 

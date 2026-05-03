@@ -5,10 +5,13 @@ import { usePathname } from 'next/navigation';
 import { 
   LayoutDashboard, Users, Receipt, Settings, Wifi, LogOut, 
   BarChart3, Network, Router, Radio, MapPin, RefreshCcw, MonitorCog,
-  Package, Map, UserCog, ChevronDown
+  Package, Map, UserCog, ChevronDown, Boxes, ToggleRight,
+  Ticket, Headphones, MessageCircle, ShieldOff, CreditCard,
+  UserCircle, Bell, ClipboardList, Database
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useState, useEffect } from 'react';
+import { useFeatureFlags } from '@/hooks/useFeatureFlags';
 
 interface MenuItem {
   name: string;
@@ -22,6 +25,7 @@ export default function Sidebar() {
   const pathname = usePathname();
   const [openMenus, setOpenMenus] = useState<string[]>(['/network', '/settings']);
   const [user, setUser] = useState<any>(null);
+  const { isEnabled } = useFeatureFlags();
 
   useEffect(() => {
     try {
@@ -36,6 +40,14 @@ export default function Sidebar() {
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, roles: ['admin', 'technician', 'sales', 'collector'] },
     { name: 'Pelanggan', path: '/customers', icon: Users, roles: ['admin', 'technician', 'sales'] },
     { name: 'Tagihan', path: '/billing', icon: Receipt, roles: ['admin', 'collector'] },
+    { name: 'Inventaris', path: '/inventory', icon: Boxes, roles: ['admin', 'technician'] },
+    ...(isEnabled('auto_suspend') ? [{ name: 'Auto Isolir', path: '/auto-suspend', icon: ShieldOff, roles: ['admin'] }] : []),
+    ...(isEnabled('payment_gateway') ? [{ name: 'Payment Gateway', path: '/payment-gateway', icon: CreditCard, roles: ['admin'] }] : []),
+    ...(isEnabled('ticketing') ? [{ name: 'Helpdesk', path: '/tickets', icon: Headphones, roles: ['admin', 'technician', 'sales'] }] : []),
+    ...(isEnabled('hotspot') ? [{ name: 'Hotspot', path: '/hotspot', icon: Ticket, roles: ['admin', 'sales'] }] : []),
+    ...(isEnabled('whatsapp') ? [{ name: 'WhatsApp', path: '/whatsapp', icon: MessageCircle, roles: ['admin'] }] : []),
+    ...(isEnabled('client_portal') ? [{ name: 'Portal Pelanggan', path: '/client-portal', icon: UserCircle, roles: ['admin'] }] : []),
+    ...(isEnabled('nms_alert') ? [{ name: 'NMS Alert', path: '/nms', icon: Bell, roles: ['admin', 'technician'] }] : []),
     { name: 'Laporan', path: '/reports', icon: BarChart3, roles: ['admin', 'sales', 'collector'] },
     { 
       name: 'Jaringan', path: '/network', icon: Network, roles: ['admin', 'technician'],
@@ -51,9 +63,13 @@ export default function Sidebar() {
     { 
       name: 'Pengaturan', path: '/settings', icon: Settings, roles: ['admin'],
       children: [
+        { name: 'Profil ISP', path: '/settings/profile', icon: UserCircle },
         { name: 'Paket Internet', path: '/settings/packages', icon: Package },
         { name: 'Wilayah', path: '/settings/regions', icon: Map },
         { name: 'Pengguna & RBAC', path: '/settings/users', icon: UserCog },
+        { name: 'Fitur & Modul', path: '/settings/features', icon: ToggleRight },
+        { name: 'Audit Logs', path: '/settings/audit-logs', icon: ClipboardList },
+        { name: 'Backup & Restore', path: '/settings/backups', icon: Database },
       ]
     },
   ];

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { api, formatRupiah } from '@/lib/api';
-import { Users, Search, Plus, Trash2, Eye, Filter, Map } from 'lucide-react';
+import { Users, Search, Plus, Trash2, Eye, Filter, Map, Download } from 'lucide-react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 
@@ -89,6 +89,10 @@ export default function CustomersPage() {
 
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
 
+  const handleExport = () => {
+    window.open('http://127.0.0.1:8000/api/export/customers', '_blank');
+  };
+
   return (
     <div className="animate-in fade-in duration-500 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -102,6 +106,13 @@ export default function CustomersPage() {
           </div>
         </div>
         <div className="flex gap-2">
+          <button 
+            onClick={handleExport}
+            className="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/20 px-4 py-2.5 rounded-2xl flex items-center space-x-2 font-medium transition-all">
+            <Download size={18} />
+            <span>Export CSV</span>
+          </button>
+
           <button 
             onClick={() => setViewMode(viewMode === 'list' ? 'map' : 'list')}
             className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2.5 rounded-2xl flex items-center space-x-2 font-medium border border-white/10 transition-all">

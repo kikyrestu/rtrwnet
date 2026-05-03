@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Swal from '@/lib/swal';
 import { api, formatRupiah } from '@/lib/api';
-import { Receipt, Search, Filter, CheckCircle2, Clock, Zap, AlertCircle } from 'lucide-react';
+import { Receipt, Search, Filter, CheckCircle2, Clock, Zap, AlertCircle, Download, Printer } from 'lucide-react';
 
 interface Invoice {
   id: number;
@@ -62,6 +62,16 @@ export default function BillingPage() {
     } catch (err: any) { Swal.fire({text: err.message,   icon: 'info'}); }
   };
 
+  const handleExport = () => {
+    const params = new URLSearchParams();
+    if (statusFilter !== 'all') params.set('status', statusFilter);
+    window.open(`http://127.0.0.1:8000/api/export/invoices?${params}`, '_blank');
+  };
+
+  const handlePrintPdf = (id: number) => {
+    window.open(`http://127.0.0.1:8000/api/invoices/${id}/pdf-preview`, '_blank');
+  };
+
   const totalUnpaid = invoices.filter(i => i.status === 'unpaid').reduce((s, i) => s + i.amount, 0);
   const totalPaid = invoices.filter(i => i.status === 'paid').reduce((s, i) => s + i.amount, 0);
 
@@ -78,14 +88,23 @@ export default function BillingPage() {
             <p className="text-sm text-gray-400">{invoices.length} tagihan</p>
           </div>
         </div>
-        <button 
-          onClick={handleGenerate}
-          disabled={generating}
-          className="bg-amber-600 hover:bg-amber-500 disabled:bg-amber-600/50 text-white px-5 py-2.5 rounded-2xl flex items-center space-x-2 font-semibold shadow-lg shadow-amber-600/20 transition-all active:scale-95"
-        >
-          <Zap size={18} />
-          <span>{generating ? 'Generating...' : 'Generate Tagihan Bulan Ini'}</span>
-        </button>
+        <div className="flex gap-2">
+          <button 
+            onClick={handleExport}
+            className="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/20 px-4 py-2.5 rounded-2xl flex items-center space-x-2 font-medium transition-all"
+          >
+            <Download size={18} />
+            <span className="hidden sm:inline">Export CSV</span>
+          </button>
+          <button 
+            onClick={handleGenerate}
+            disabled={generating}
+            className="bg-amber-600 hover:bg-amber-500 disabled:bg-amber-600/50 text-white px-5 py-2.5 rounded-2xl flex items-center space-x-2 font-semibold shadow-lg shadow-amber-600/20 transition-all active:scale-95"
+          >
+            <Zap size={18} />
+            <span>{generating ? 'Generating...' : 'Generate Tagihan'}</span>
+          </button>
+        </div>
       </div>
 
       {/* Summary Cards */}
@@ -174,17 +193,25 @@ export default function BillingPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      {inv.status === 'unpaid' && (
+                      <div className="flex items-center justify-end space-x-2">
                         <button
-                          onClick={() => handlePay(inv.id)}
-                          className="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 px-4 py-1.5 rounded-xl text-xs font-bold transition-all border border-emerald-500/20"
+                          onClick={() => handlePrintPdf(inv.id)}
+                          className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border border-blue-500/20 flex items-center gap-1"
                         >
-                          Bayar
+                          <Printer size={14} /> PDF
                         </button>
-                      )}
-                      {inv.status === 'paid' && inv.paid_at && (
-                        <span className="text-xs text-gray-500">{new Date(inv.paid_at).toLocaleDateString('id-ID')}</span>
-                      )}
+                        {inv.status === 'unpaid' && (
+                          <button
+                            onClick={() => handlePay(inv.id)}
+                            className="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 px-4 py-1.5 rounded-xl text-xs font-bold transition-all border border-emerald-500/20"
+                          >
+                            Bayar
+                          </button>
+                        )}
+                        {inv.status === 'paid' && inv.paid_at && (
+                          <span className="text-xs text-gray-500 whitespace-nowrap">{new Date(inv.paid_at).toLocaleDateString('id-ID')}</span>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

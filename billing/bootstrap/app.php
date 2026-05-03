@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'feature' => \App\Http\Middleware\CheckFeature::class,
         ]);
         
         // Allow CORS from Next.js frontend

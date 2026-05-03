@@ -16,7 +16,7 @@ class MikrotikService
      */
     public function getConnectedApi(Router $router): ?RouterosAPI
     {
-        $api = new RouterosAPI();
+        $api = app(RouterosAPI::class);
         $api->debug = false;
         $api->port = $router->api_port ?? 8728; // Enforce correct port setup
 
