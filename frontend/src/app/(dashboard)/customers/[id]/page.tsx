@@ -88,7 +88,6 @@ export default function CustomerDetailPage() {
           longitude: cust.longitude || '',
         });
       })
-      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [id]);
