@@ -87,7 +87,15 @@
       "billing": "Tagihan",
       "reports": "Laporan",
       "network": "Jaringan",
-      "settings": "Pengaturan"
+      "settings": "Pengaturan",
+      "inventory": "Inventaris",
+      "tickets": "Tiket & Helpdesk",
+      "hotspot": "Hotspot",
+      "whatsapp": "WhatsApp",
+      "client-portal": "Portal Pelanggan",
+      "nms": "NMS",
+      "auto-suspend": "Auto Suspend",
+      "payment-gateway": "Payment Gateway"
     }
   },
   "login": {

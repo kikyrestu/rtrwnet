@@ -87,7 +87,15 @@
       "billing": "Billing",
       "reports": "Reports",
       "network": "Network",
-      "settings": "Settings"
+      "settings": "Settings",
+      "inventory": "Inventory",
+      "tickets": "Tickets & Helpdesk",
+      "hotspot": "Hotspot",
+      "whatsapp": "WhatsApp",
+      "client-portal": "Client Portal",
+      "nms": "NMS",
+      "auto-suspend": "Auto Suspend",
+      "payment-gateway": "Payment Gateway"
     }
   },
   "login": {
