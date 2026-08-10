@@ -3,33 +3,102 @@
 import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useFeatureFlags } from '@/hooks/useFeatureFlags';
 import { 
   LayoutDashboard, Users, Receipt, Network, Settings,
   Package, Wifi, BarChart3, Headphones, MessageCircle,
-  ChevronUp, X
+  ChevronUp, ChevronDown,
+  // Network children
+  Map, Router, MonitorCog, Radio, MapPin, RefreshCcw,
+  // Settings children
+  UserCircle, UserCog, ToggleRight, ClipboardList, Database,
+  // Feature-flagged modules
+  ShieldOff, CreditCard, Bell, Ticket
 } from 'lucide-react';
+
+interface NavItem {
+  label: string;
+  icon: any;
+  path: string;
+}
+
+interface NavSection {
+  label: string;
+  icon: any;
+  children: NavItem[];
+}
 
 export default function BottomNav() {
   const pathname = usePathname();
   const router = useRouter();
   const t = useTranslations('sidebar');
+  const { isEnabled } = useFeatureFlags();
   const [open, setOpen] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<string[]>([]);
 
-  const mainItems = [
+  // === Bottom bar items (always visible) ===
+  const mainItems: NavItem[] = [
     { label: t('dashboard'), icon: LayoutDashboard, path: '/dashboard' },
     { label: t('customers'), icon: Users, path: '/customers' },
     { label: t('billing'), icon: Receipt, path: '/billing' },
-    { label: t('network'), icon: Network, path: '/network/map' },
   ];
 
-  const moreItems = [
+  // === More panel: flat items ===
+  const moreItems: NavItem[] = [
     { label: t('inventory'), icon: Package, path: '/inventory' },
-    { label: t('hotspot'), icon: Wifi, path: '/hotspot' },
     { label: t('reports'), icon: BarChart3, path: '/reports' },
-    { label: t('helpdesk'), icon: Headphones, path: '/tickets' },
-    { label: t('whatsapp'), icon: MessageCircle, path: '/whatsapp' },
-    { label: t('settings'), icon: Settings, path: '/settings' },
+    // Feature-flagged modules
+    ...(isEnabled('ticketing') ? [{ label: t('helpdesk'), icon: Headphones, path: '/tickets' }] : []),
+    ...(isEnabled('hotspot') ? [{ label: t('hotspot'), icon: Wifi, path: '/hotspot' }] : []),
+    ...(isEnabled('whatsapp') ? [{ label: t('whatsapp'), icon: MessageCircle, path: '/whatsapp' }] : []),
+    ...(isEnabled('auto_suspend') ? [{ label: t('autoIsolir'), icon: ShieldOff, path: '/auto-suspend' }] : []),
+    ...(isEnabled('payment_gateway') ? [{ label: t('paymentGateway'), icon: CreditCard, path: '/payment-gateway' }] : []),
+    ...(isEnabled('client_portal') ? [{ label: t('portalPelanggan'), icon: UserCircle, path: '/client-portal' }] : []),
+    ...(isEnabled('nms_alert') ? [{ label: t('nmsAlert'), icon: Bell, path: '/nms' }] : []),
   ];
+
+  // === More panel: sections with children ===
+  const sections: NavSection[] = [
+    {
+      label: t('network'),
+      icon: Network,
+      children: [
+        { label: t('networkTopology'), icon: Map, path: '/network/map' },
+        { label: t('networkRouters'), icon: Router, path: '/network/routers' },
+        { label: t('networkMonitor'), icon: MonitorCog, path: '/network/monitor' },
+        { label: t('networkOlt'), icon: Radio, path: '/network/olt' },
+        { label: t('networkOdp'), icon: MapPin, path: '/network/odp' },
+        { label: t('networkSync'), icon: RefreshCcw, path: '/network/sync' },
+      ],
+    },
+    {
+      label: t('settings'),
+      icon: Settings,
+      children: [
+        { label: t('settingsProfile'), icon: UserCircle, path: '/settings/profile' },
+        { label: t('settingsPackages'), icon: Package, path: '/settings/packages' },
+        { label: t('settingsRegions'), icon: Map, path: '/settings/regions' },
+        { label: t('settingsUsers'), icon: UserCog, path: '/settings/users' },
+        { label: t('settingsFeatures'), icon: ToggleRight, path: '/settings/features' },
+        { label: t('settingsAuditLogs'), icon: ClipboardList, path: '/settings/audit-logs' },
+        { label: t('settingsBackups'), icon: Database, path: '/settings/backups' },
+      ],
+    },
+  ];
+
+  const toggleSection = (label: string) => {
+    setExpandedSections(prev =>
+      prev.includes(label) ? prev.filter(l => l !== label) : [...prev, label]
+    );
+  };
+
+  const isSectionActive = (section: NavSection) =>
+    section.children.some(c => pathname.includes(c.path));
+
+  const navigate = (path: string) => {
+    router.push(path);
+    setOpen(false);
+  };
 
   return (
     <>
@@ -47,32 +116,93 @@ export default function BottomNav() {
           ? 'translate-y-0 opacity-100' 
           : 'translate-y-8 opacity-0 pointer-events-none'
       }`}>
-        <div className="bg-slate-900/98 backdrop-blur-xl border border-white/10 rounded-3xl mx-3 mb-2 shadow-2xl shadow-black/50">
+        <div className="bg-slate-900/98 backdrop-blur-xl border border-white/10 rounded-3xl mx-3 mb-2 shadow-2xl shadow-black/50 max-h-[70vh] flex flex-col">
           {/* Handle */}
-          <div className="flex justify-center pt-3 pb-1">
+          <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
             <button 
               onClick={() => setOpen(false)}
               className="tap-target w-10 h-1.5 bg-white/20 rounded-full hover:bg-white/40 transition-colors"
             />
           </div>
 
-          {/* More items grid */}
-          <div className="grid grid-cols-3 gap-2 px-4 pb-4 pt-2">
-            {moreItems.map(({ label, icon: Icon, path }) => {
-              const active = pathname.includes(path);
+          {/* Scrollable content */}
+          <div className="overflow-y-auto overscroll-contain px-4 pb-4 pt-1">
+
+            {/* Flat items grid */}
+            {moreItems.length > 0 && (
+              <div className="grid grid-cols-3 gap-2 mb-3">
+                {moreItems.map(({ label, icon: Icon, path }) => {
+                  const active = pathname.includes(path);
+                  return (
+                    <button
+                      key={path}
+                      onClick={() => navigate(path)}
+                      className={`tap-target flex flex-col items-center justify-center gap-1.5 py-3 rounded-2xl transition-all duration-200 active:scale-95 ${
+                        active 
+                          ? 'bg-blue-600/20 text-blue-400' 
+                          : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
+                      }`}
+                    >
+                      <Icon size={22} />
+                      <span className="text-[11px] font-medium truncate max-w-[80px]">{label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Expandable sections (Network, Settings) */}
+            {sections.map((section) => {
+              const SectionIcon = section.icon;
+              const isExpanded = expandedSections.includes(section.label);
+              const sectionActive = isSectionActive(section);
+
               return (
-                <button
-                  key={path}
-                  onClick={() => { router.push(path); setOpen(false); }}
-                  className={`tap-target flex flex-col items-center justify-center gap-1.5 py-3 rounded-2xl transition-all duration-200 active:scale-95 ${
-                    active 
-                      ? 'bg-blue-600/20 text-blue-400' 
-                      : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
-                  }`}
-                >
-                  <Icon size={22} />
-                  <span className="text-[11px] font-medium truncate max-w-[80px]">{label}</span>
-                </button>
+                <div key={section.label} className="mb-2">
+                  {/* Section header */}
+                  <button
+                    onClick={() => toggleSection(section.label)}
+                    className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all duration-200 active:scale-[0.98] ${
+                      sectionActive
+                        ? 'bg-blue-600/15 text-blue-400'
+                        : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <SectionIcon size={20} />
+                      <span className="text-sm font-semibold">{section.label}</span>
+                    </div>
+                    <ChevronDown 
+                      size={16} 
+                      className={`transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                    />
+                  </button>
+
+                  {/* Section children */}
+                  <div className={`overflow-hidden transition-all duration-300 ${
+                    isExpanded ? 'max-h-96 opacity-100 mt-1' : 'max-h-0 opacity-0'
+                  }`}>
+                    <div className="grid grid-cols-3 gap-1.5 px-1 pb-1">
+                      {section.children.map(({ label, icon: ChildIcon, path }) => {
+                        const active = pathname === path;
+                        return (
+                          <button
+                            key={path}
+                            onClick={() => navigate(path)}
+                            className={`tap-target flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl transition-all duration-200 active:scale-95 ${
+                              active
+                                ? 'bg-blue-600/20 text-blue-400'
+                                : 'text-gray-500 hover:bg-white/5 hover:text-gray-300'
+                            }`}
+                          >
+                            <ChildIcon size={18} />
+                            <span className="text-[10px] font-medium truncate max-w-[72px] leading-tight text-center">{label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
               );
             })}
           </div>
