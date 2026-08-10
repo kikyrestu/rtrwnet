@@ -200,7 +200,7 @@ export default function WhatsAppPage() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+          <h1 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
             <div className="p-2 bg-emerald-600/20 rounded-xl border border-emerald-500/20">
               <MessageCircle className="text-emerald-400" size={24} />
             </div>
@@ -230,7 +230,7 @@ export default function WhatsAppPage() {
             { label: 'Pending', value: summary.total_pending, color: 'text-amber-400' },
           ].map(s => (
             <div key={s.label} className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 text-center">
-              <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
+              <p className={`text-xl sm:text-2xl font-bold ${s.color}`}>{s.value}</p>
               <p className="text-xs text-gray-500 mt-1">{s.label}</p>
             </div>
           ))}
@@ -288,7 +288,7 @@ export default function WhatsAppPage() {
 
       {/* Broadcast Tab - inline form */}
       {tab === 'broadcast' && (
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+        <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6">
           <form onSubmit={handleBroadcast} className="space-y-5">
             <div>
               <label className="block text-sm text-gray-400 mb-1">Pilih Template</label>
@@ -386,7 +386,7 @@ export default function WhatsAppPage() {
 
       {/* Settings Tab */}
       {tab === 'settings' && (
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6 max-w-2xl">
+        <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6 max-w-2xl">
           <form onSubmit={handleSaveConfig} className="space-y-5">
             <div>
               <label className="block text-sm text-gray-400 mb-1">Provider WhatsApp</label>
@@ -425,7 +425,7 @@ export default function WhatsAppPage() {
       {/* Template Form Modal */}
       {showTemplateForm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowTemplateForm(false)}>
-          <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+          <div className="bg-slate-900 border border-white/10 rounded-2xl p-4 sm:p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-bold text-white">{editingId ? 'Edit Template' : 'Template Baru'}</h2>
               <button onClick={() => setShowTemplateForm(false)} className="text-gray-400 hover:text-white"><X size={20} /></button>

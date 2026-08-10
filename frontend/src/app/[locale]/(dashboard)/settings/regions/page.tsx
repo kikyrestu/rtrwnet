@@ -56,15 +56,15 @@ export default function RegionsPage() {
 
   return (
     <div className="animate-in fade-in duration-500 space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div className="flex items-center gap-3">
           <div className="p-3 rounded-2xl bg-green-500/10"><Map className="text-green-400" size={24} /></div>
           <div>
-            <h1 className="text-2xl font-bold text-white">Wilayah / Area</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">Wilayah / Area</h1>
             <p className="text-sm text-gray-400">{regions.length} wilayah</p>
           </div>
         </div>
-        <button onClick={openCreate} className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-2xl flex items-center space-x-2 font-semibold shadow-lg shadow-blue-600/20 transition-all active:scale-95">
+        <button onClick={openCreate} className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-2xl flex items-center space-x-2 font-semibold shadow-lg shadow-blue-600/20 transition-all active:scale-95">
           <Plus size={18} /><span>Tambah Wilayah</span>
         </button>
       </div>
@@ -78,7 +78,7 @@ export default function RegionsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {regions.map((r) => (
-            <div key={r.id} className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-6 rounded-3xl hover:border-white/20 transition-all group">
+            <div key={r.id} className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-4 sm:p-6 rounded-3xl hover:border-white/20 transition-all group">
               <div className="flex justify-between items-start mb-3">
                 <div className="p-2.5 rounded-xl bg-green-500/10"><Map className="text-green-400" size={20} /></div>
                 <div className="flex gap-1 ">
@@ -98,8 +98,8 @@ export default function RegionsPage() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowModal(false)}>
-          <div className="bg-slate-900 border border-white/10 rounded-3xl p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-6">
+          <div className="bg-slate-900 border border-white/10 rounded-3xl p-4 sm:p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
               <h3 className="text-xl font-bold text-white">{editId ? 'Edit Wilayah' : 'Tambah Wilayah Baru'}</h3>
               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-white"><X size={20} /></button>
             </div>
@@ -116,9 +116,9 @@ export default function RegionsPage() {
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">
-              <button onClick={() => setShowModal(false)} className="px-5 py-2.5 rounded-xl border border-white/10 text-gray-400 hover:bg-white/5 font-medium">Batal</button>
+              <button onClick={() => setShowModal(false)} className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl border border-white/10 text-gray-400 hover:bg-white/5 font-medium">Batal</button>
               <button onClick={handleSave} disabled={saving}
-                className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 text-white px-5 py-2.5 rounded-xl flex items-center space-x-2 font-semibold shadow-lg shadow-blue-600/20">
+                className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl flex items-center space-x-2 font-semibold shadow-lg shadow-blue-600/20">
                 <Save size={18} /><span>{saving ? 'Menyimpan...' : 'Simpan'}</span>
               </button>
             </div>

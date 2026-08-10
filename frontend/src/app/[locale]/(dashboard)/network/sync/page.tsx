@@ -47,13 +47,13 @@ export default function SyncPage() {
       <div className="flex items-center gap-3">
         <div className="p-3 rounded-2xl bg-orange-500/10"><RefreshCcw className="text-orange-400" size={24} /></div>
         <div>
-          <h1 className="text-2xl font-bold text-white">Sinkronisasi Mikrotik</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-white">Sinkronisasi Mikrotik</h1>
           <p className="text-sm text-gray-400">Tarik data PPPoE Secrets & Profiles dari Router</p>
         </div>
       </div>
 
       {/* Controls */}
-      <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-6 rounded-3xl space-y-4">
+      <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-4 sm:p-6 rounded-3xl space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-400 mb-2">Pilih Router Target</label>
           <select value={selectedRouter} onChange={e => setSelectedRouter(e.target.value)}
@@ -65,7 +65,7 @@ export default function SyncPage() {
         <button
           onClick={handleSync}
           disabled={syncing || !selectedRouter}
-          className="bg-orange-600 hover:bg-orange-500 disabled:bg-orange-600/30 disabled:cursor-not-allowed text-white px-8 py-3 rounded-2xl flex items-center space-x-3 font-bold text-lg shadow-lg shadow-orange-600/20 transition-all active:scale-95"
+          className="bg-orange-600 hover:bg-orange-500 disabled:bg-orange-600/30 disabled:cursor-not-allowed text-white px-5 py-2.5 sm:px-8 sm:py-3 rounded-2xl flex items-center space-x-3 font-bold text-lg shadow-lg shadow-orange-600/20 transition-all active:scale-95"
         >
           <RefreshCcw size={22} className={syncing ? 'animate-spin' : ''} />
           <span>{syncing ? 'Menyinkronkan...' : 'Mulai Sinkronisasi'}</span>

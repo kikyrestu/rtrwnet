@@ -137,7 +137,7 @@ export default function InventoryPage() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+          <h1 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
             <div className="p-2 bg-blue-600/20 rounded-xl border border-blue-500/20">
               <Boxes className="text-blue-400" size={24} />
             </div>
@@ -170,7 +170,7 @@ export default function InventoryPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-400 uppercase tracking-wider">Total Item</p>
-                <p className="text-2xl font-bold text-white mt-1">{summary.total_items}</p>
+                <p className="text-xl sm:text-2xl font-bold text-white mt-1">{summary.total_items}</p>
               </div>
               <div className="p-3 bg-blue-600/20 rounded-xl"><Boxes className="text-blue-400" size={22} /></div>
             </div>
@@ -179,7 +179,7 @@ export default function InventoryPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-400 uppercase tracking-wider">Total Nilai Stok</p>
-                <p className="text-2xl font-bold text-white mt-1">Rp {summary.total_value.toLocaleString('id-ID')}</p>
+                <p className="text-xl sm:text-2xl font-bold text-white mt-1">Rp {summary.total_value.toLocaleString('id-ID')}</p>
               </div>
               <div className="p-3 bg-emerald-600/20 rounded-xl"><DollarSign className="text-emerald-400" size={22} /></div>
             </div>
@@ -188,7 +188,7 @@ export default function InventoryPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-400 uppercase tracking-wider">Stok Menipis</p>
-                <p className="text-2xl font-bold text-white mt-1">{summary.low_stock_count}</p>
+                <p className="text-xl sm:text-2xl font-bold text-white mt-1">{summary.low_stock_count}</p>
               </div>
               <div className="p-3 bg-red-600/20 rounded-xl"><AlertTriangle className="text-red-400" size={22} /></div>
             </div>
@@ -332,7 +332,7 @@ export default function InventoryPage() {
       {/* Add Item Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowAddModal(false)}>
-          <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+          <div className="bg-slate-900 border border-white/10 rounded-2xl p-4 sm:p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-bold text-white">Tambah Item Baru</h2>
               <button onClick={() => setShowAddModal(false)} className="text-gray-400 hover:text-white"><X size={20} /></button>
@@ -396,7 +396,7 @@ export default function InventoryPage() {
       {/* Stock In/Out Modal */}
       {showStockModal && selectedItem && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowStockModal(false)}>
-          <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+          <div className="bg-slate-900 border border-white/10 rounded-2xl p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
                 {stockModalType === 'in' ? (

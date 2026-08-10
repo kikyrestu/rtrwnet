@@ -85,7 +85,7 @@ export default function BillingPage() {
             <Receipt className="text-amber-400" size={24} />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">{t('title')}</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">{t('title')}</h1>
             <p className="text-sm text-gray-400">{t('subtitle', { count: invoices.length })}</p>
           </div>
         </div>
@@ -96,7 +96,7 @@ export default function BillingPage() {
             <span className="hidden sm:inline">{t('exportCsv')}</span>
           </button>
           <button onClick={handleGenerate} disabled={generating}
-            className="bg-amber-600 hover:bg-amber-500 disabled:bg-amber-600/50 text-white px-5 py-2.5 rounded-2xl flex items-center space-x-2 font-semibold shadow-lg shadow-amber-600/20 transition-all active:scale-95">
+            className="bg-amber-600 hover:bg-amber-500 disabled:bg-amber-600/50 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-2xl flex items-center space-x-2 font-semibold shadow-lg shadow-amber-600/20 transition-all active:scale-95">
             <Zap size={18} />
             <span>{generating ? t('generating') : t('generateInvoice')}</span>
           </button>
@@ -109,14 +109,14 @@ export default function BillingPage() {
             <div className="p-2 rounded-xl bg-emerald-500/10"><CheckCircle2 className="text-emerald-400" size={20} /></div>
             <span className="text-sm text-gray-400">{t('totalPaid')}</span>
           </div>
-          <p className="text-2xl font-bold text-emerald-400">{formatRupiah(totalPaid)}</p>
+          <p className="text-xl sm:text-2xl font-bold text-emerald-400">{formatRupiah(totalPaid)}</p>
         </div>
         <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-5 rounded-3xl">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 rounded-xl bg-red-500/10"><AlertCircle className="text-red-400" size={20} /></div>
             <span className="text-sm text-gray-400">{t('totalArrears')}</span>
           </div>
-          <p className="text-2xl font-bold text-red-400">{formatRupiah(totalUnpaid)}</p>
+          <p className="text-xl sm:text-2xl font-bold text-red-400">{formatRupiah(totalUnpaid)}</p>
         </div>
       </div>
 

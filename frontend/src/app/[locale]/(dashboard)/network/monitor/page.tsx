@@ -166,7 +166,7 @@ export default function MonitorPage() {
         <div className="flex items-center gap-3">
           <div className="p-3 rounded-2xl bg-emerald-500/10"><MonitorCog className="text-emerald-400" size={24} /></div>
           <div>
-            <h1 className="text-2xl font-bold text-white">Monitor Mikrotik</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">Monitor Mikrotik</h1>
             <p className="text-sm text-gray-400">Real-time system, traffic & PPPoE monitoring</p>
           </div>
         </div>
@@ -225,7 +225,7 @@ export default function MonitorPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-5 rounded-3xl">
               <div className="flex items-center gap-2 mb-3"><Cpu size={18} className="text-blue-400" /><span className="text-sm text-gray-400 font-medium">CPU Load</span></div>
-              <p className={`text-3xl font-bold ${sys.cpu_load > 80 ? 'text-red-400' : sys.cpu_load > 50 ? 'text-amber-400' : 'text-emerald-400'}`}>{sys.cpu_load}%</p>
+              <p className={`text-2xl sm:text-3xl font-bold ${sys.cpu_load > 80 ? 'text-red-400' : sys.cpu_load > 50 ? 'text-amber-400' : 'text-emerald-400'}`}>{sys.cpu_load}%</p>
               <div className="mt-3 h-2 bg-white/5 rounded-full overflow-hidden">
                 <div className={`h-full rounded-full transition-all duration-500 ${sys.cpu_load > 80 ? 'bg-red-500' : sys.cpu_load > 50 ? 'bg-amber-500' : 'bg-emerald-500'}`} style={{ width: `${sys.cpu_load}%` }} />
               </div>
@@ -233,7 +233,7 @@ export default function MonitorPage() {
 
             <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-5 rounded-3xl">
               <div className="flex items-center gap-2 mb-3"><MemoryStick size={18} className="text-violet-400" /><span className="text-sm text-gray-400 font-medium">Memory</span></div>
-              <p className={`text-3xl font-bold ${memPercent > 85 ? 'text-red-400' : memPercent > 60 ? 'text-amber-400' : 'text-violet-400'}`}>{memPercent}%</p>
+              <p className={`text-2xl sm:text-3xl font-bold ${memPercent > 85 ? 'text-red-400' : memPercent > 60 ? 'text-amber-400' : 'text-violet-400'}`}>{memPercent}%</p>
               <p className="text-xs text-gray-500 mt-1">{formatBytes(sys.used_memory)} / {formatBytes(sys.total_memory)}</p>
               <div className="mt-2 h-2 bg-white/5 rounded-full overflow-hidden">
                 <div className="h-full rounded-full bg-violet-500 transition-all duration-500" style={{ width: `${memPercent}%` }} />
@@ -242,7 +242,7 @@ export default function MonitorPage() {
 
             <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-5 rounded-3xl">
               <div className="flex items-center gap-2 mb-3"><HardDrive size={18} className="text-cyan-400" /><span className="text-sm text-gray-400 font-medium">Storage</span></div>
-              <p className="text-3xl font-bold text-cyan-400">{hddPercent}%</p>
+              <p className="text-2xl sm:text-3xl font-bold text-cyan-400">{hddPercent}%</p>
               <p className="text-xs text-gray-500 mt-1">{formatBytes(hddUsed)} / {formatBytes(sys.total_hdd)}</p>
               <div className="mt-2 h-2 bg-white/5 rounded-full overflow-hidden">
                 <div className="h-full rounded-full bg-cyan-500 transition-all duration-500" style={{ width: `${hddPercent}%` }} />
@@ -261,7 +261,7 @@ export default function MonitorPage() {
           </div>
 
           {/* ===== TRAFFIC GRAPH ===== */}
-          <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-3xl p-6">
+          <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-3xl p-4 sm:p-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5">
               <div>
                 <h3 className="font-bold text-white flex items-center gap-2">

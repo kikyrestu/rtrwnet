@@ -52,7 +52,7 @@ export default function ClientPortalPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+          <h1 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
             <div className="p-2 bg-blue-600/20 rounded-xl border border-blue-500/20">
               <UserCircle className="text-blue-400" size={24} />
             </div>
@@ -71,7 +71,7 @@ export default function ClientPortalPage() {
         ].map(s => (
           <div key={s.label} className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-5">
             <div className="flex items-center justify-between">
-              <div><p className="text-xs text-gray-400 uppercase tracking-wider">{s.label}</p><p className={`text-2xl font-bold ${s.color} mt-1`}>{s.value}</p></div>
+              <div><p className="text-xs text-gray-400 uppercase tracking-wider">{s.label}</p><p className={`text-xl sm:text-2xl font-bold ${s.color} mt-1`}>{s.value}</p></div>
               <div className={`p-3 ${s.bg} rounded-xl`}><s.icon className={s.color} size={22} /></div>
             </div>
           </div>
@@ -79,7 +79,7 @@ export default function ClientPortalPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6 space-y-4">
+        <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6 space-y-4">
           <h2 className="text-lg font-bold text-white flex items-center gap-2"><Settings2 size={18} className="text-gray-400" /> {t('settingsTitle')}</h2>
           <div>
             <label className="block text-sm text-gray-400 mb-1">{t('portalUrl')}</label>
@@ -100,9 +100,9 @@ export default function ClientPortalPage() {
           </button>
         </div>
 
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+        <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6">
           <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><Eye size={18} className="text-gray-400" /> {t('preview')}</h2>
-          <div className="bg-gradient-to-br from-blue-900/40 to-indigo-900/40 border border-white/10 rounded-2xl p-6 text-center space-y-4">
+          <div className="bg-gradient-to-br from-blue-900/40 to-indigo-900/40 border border-white/10 rounded-2xl p-4 sm:p-6 text-center space-y-4">
             <div className="w-16 h-16 bg-blue-600/30 rounded-full mx-auto flex items-center justify-center"><UserCircle size={32} className="text-blue-400" /></div>
             <h3 className="text-white font-bold text-lg">{t('previewTitle')}</h3>
             <p className="text-gray-400 text-sm">{t('previewDesc')}</p>

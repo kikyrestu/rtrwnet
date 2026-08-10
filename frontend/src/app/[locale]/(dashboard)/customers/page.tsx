@@ -104,7 +104,7 @@ export default function CustomersPage() {
             <Users className="text-blue-400" size={24} />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">{t('title')}</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">{t('title')}</h1>
             <p className="text-sm text-gray-400">{t('subtitle', { count: customers.length })}</p>
           </div>
         </div>
@@ -124,7 +124,7 @@ export default function CustomersPage() {
           </button>
           
           <Link href="/customers/create"
-            className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-2xl flex items-center space-x-2 font-semibold shadow-lg shadow-blue-600/20 transition-all active:scale-95">
+            className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-2xl flex items-center space-x-2 font-semibold shadow-lg shadow-blue-600/20 transition-all active:scale-95">
             <Plus size={18} />
             <span>{t('addCustomer')}</span>
           </Link>

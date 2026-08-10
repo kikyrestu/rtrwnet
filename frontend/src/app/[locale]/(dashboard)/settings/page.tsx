@@ -39,7 +39,7 @@ export default function SettingsDashboard() {
   return (
     <div className="p-4 sm:p-6 space-y-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+        <h1 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
           <Settings className="w-7 h-7 text-blue-500" />
           {t('title')}
         </h1>
@@ -49,7 +49,7 @@ export default function SettingsDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-8">
         {menus.map((item, idx) => (
           <Link key={idx} href={item.href} className="group block h-full">
-            <div className={`h-full p-6 rounded-3xl bg-slate-900/50 backdrop-blur-md border border-white/5 hover:border-white/20 transition-all duration-300 relative overflow-hidden flex flex-col shadow-lg shadow-black/20 hover:shadow-blue-500/10`}>
+            <div className={`h-full p-4 sm:p-6 rounded-3xl bg-slate-900/50 backdrop-blur-md border border-white/5 hover:border-white/20 transition-all duration-300 relative overflow-hidden flex flex-col shadow-lg shadow-black/20 hover:shadow-blue-500/10`}>
               <div className={`absolute -right-6 -top-6 w-32 h-32 rounded-full ${item.bg} blur-3xl group-hover:scale-150 transition-transform duration-700 pointer-events-none`} />
               <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${item.bg} ${item.border} border mb-6 relative z-10`}>
                 <item.icon className={`w-7 h-7 ${item.color}`} />

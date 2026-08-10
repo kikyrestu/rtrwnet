@@ -117,7 +117,7 @@ export default function TicketsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+          <h1 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
             <div className="p-2 bg-violet-600/20 rounded-xl border border-violet-500/20">
               <Headphones className="text-violet-400" size={24} />
             </div>
@@ -141,7 +141,7 @@ export default function TicketsPage() {
             { label: t('summary.critical'), value: summary.critical, color: 'text-red-400' },
           ].map((s) => (
             <div key={s.label} className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 text-center">
-              <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
+              <p className={`text-xl sm:text-2xl font-bold ${s.color}`}>{s.value}</p>
               <p className="text-xs text-gray-500 mt-1">{s.label}</p>
             </div>
           ))}
@@ -216,7 +216,7 @@ export default function TicketsPage() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowModal(false)}>
-          <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+          <div className="bg-slate-900 border border-white/10 rounded-2xl p-4 sm:p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-bold text-white">{t('newTicket')}</h2>
               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-white"><X size={20} /></button>

@@ -67,7 +67,7 @@ export default function AutoSuspendPage() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+          <h1 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
             <div className="p-2 bg-red-600/20 rounded-xl border border-red-500/20">
               <ShieldOff className="text-red-400" size={24} />
             </div>
@@ -92,7 +92,7 @@ export default function AutoSuspendPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-400 uppercase tracking-wider">{s.label}</p>
-                <p className={`text-2xl font-bold ${s.color} mt-1`}>{s.value}</p>
+                <p className={`text-xl sm:text-2xl font-bold ${s.color} mt-1`}>{s.value}</p>
               </div>
               <div className={`p-3 ${s.iconBg} rounded-xl`}><s.icon className={s.color} size={22} /></div>
             </div>
@@ -101,7 +101,7 @@ export default function AutoSuspendPage() {
       </div>
 
       {/* Settings */}
-      <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+      <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6">
         <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><Settings2 size={18} className="text-gray-400" /> Konfigurasi</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -137,7 +137,7 @@ export default function AutoSuspendPage() {
           </label>
         </div>
         <div className="mt-6 flex justify-end">
-          <button onClick={handleSaveConfig} disabled={saving} className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 text-white px-5 py-2.5 rounded-xl font-medium transition-all flex items-center gap-2 shadow-lg shadow-blue-600/20">
+          <button onClick={handleSaveConfig} disabled={saving} className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl font-medium transition-all flex items-center gap-2 shadow-lg shadow-blue-600/20">
             {saving ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
             Simpan Konfigurasi
           </button>

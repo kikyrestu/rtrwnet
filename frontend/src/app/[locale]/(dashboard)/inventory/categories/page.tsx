@@ -84,7 +84,7 @@ export default function InventoryCategoriesPage() {
             <Link href="/inventory" className="text-gray-400 hover:text-white transition-colors">
               <ArrowLeft size={20} />
             </Link>
-            <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+            <h1 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
               <div className="p-2 bg-violet-600/20 rounded-xl border border-violet-500/20">
                 <Package className="text-violet-400" size={24} />
               </div>
@@ -147,7 +147,7 @@ export default function InventoryCategoriesPage() {
       {/* Add/Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowModal(false)}>
-          <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+          <div className="bg-slate-900 border border-white/10 rounded-2xl p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-bold text-white">{editingId ? 'Edit Kategori' : 'Tambah Kategori'}</h2>
               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-white"><X size={20} /></button>

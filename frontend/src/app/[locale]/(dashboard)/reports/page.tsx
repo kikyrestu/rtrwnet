@@ -44,29 +44,29 @@ export default function ReportsPage() {
           <BarChart3 className="text-purple-400" size={24} />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-white">{t('title')}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-white">{t('title')}</h1>
           <p className="text-sm text-gray-400">{t('period')}: {data.current_month}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-6 rounded-3xl">
+        <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-4 sm:p-6 rounded-3xl">
           <div className="flex items-center gap-3 mb-3">
             <div className="p-2.5 rounded-xl bg-emerald-500/10"><TrendingUp className="text-emerald-400" size={22} /></div>
             <span className="text-gray-400 font-medium">{t('totalIncome')}</span>
           </div>
-          <p className="text-3xl font-bold text-emerald-400">{formatRupiah(data.total_paid)}</p>
+          <p className="text-2xl sm:text-3xl font-bold text-emerald-400">{formatRupiah(data.total_paid)}</p>
         </div>
-        <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-6 rounded-3xl">
+        <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-4 sm:p-6 rounded-3xl">
           <div className="flex items-center gap-3 mb-3">
             <div className="p-2.5 rounded-xl bg-red-500/10"><AlertCircle className="text-red-400" size={22} /></div>
             <span className="text-gray-400 font-medium">{t('totalArrears')}</span>
           </div>
-          <p className="text-3xl font-bold text-red-400">{formatRupiah(data.total_unpaid)}</p>
+          <p className="text-2xl sm:text-3xl font-bold text-red-400">{formatRupiah(data.total_unpaid)}</p>
         </div>
       </div>
 
-      <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-6 rounded-3xl">
+      <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-4 sm:p-6 rounded-3xl">
         <h3 className="font-bold text-lg text-white mb-6">{t('revenueChart')}</h3>
         <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
@@ -92,7 +92,7 @@ export default function ReportsPage() {
       </div>
 
       <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden">
-        <div className="p-6 border-b border-white/5">
+        <div className="p-4 sm:p-6 border-b border-white/5">
           <h3 className="font-bold text-lg text-white">{t('paidTransactions')}</h3>
         </div>
         {data.paid_invoices.length === 0 ? (

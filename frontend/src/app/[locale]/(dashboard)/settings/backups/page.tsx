@@ -68,14 +68,14 @@ export default function DatabaseBackupPage() {
             <Database className="text-fuchsia-400" size={24} />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">Database Backup & Restore</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">Database Backup & Restore</h1>
             <p className="text-sm text-gray-400">Cadangkan seluruh data transaksi, tagihan, dan pengaturan pelanggan</p>
           </div>
         </div>
         <button 
           onClick={handleGenerate}
           disabled={generating}
-          className="bg-fuchsia-600 hover:bg-fuchsia-500 disabled:bg-fuchsia-600/50 text-white px-5 py-2.5 rounded-2xl flex items-center space-x-2 font-semibold shadow-lg shadow-fuchsia-600/20 transition-all active:scale-95"
+          className="bg-fuchsia-600 hover:bg-fuchsia-500 disabled:bg-fuchsia-600/50 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-2xl flex items-center space-x-2 font-semibold shadow-lg shadow-fuchsia-600/20 transition-all active:scale-95"
         >
           {generating ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />}
           <span>{generating ? 'Mencadangkan...' : 'Buat Backup Baru'}</span>

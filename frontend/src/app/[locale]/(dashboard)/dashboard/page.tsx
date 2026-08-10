@@ -48,7 +48,7 @@ const StatCard = ({ title, value, icon: Icon, trend, color }: any) => {
         )}
       </div>
       <p className="text-gray-400 text-sm font-medium">{title}</p>
-      <h3 className="text-2xl font-bold text-white mt-1">{value}</h3>
+      <h3 className="text-xl sm:text-2xl font-bold text-white mt-1">{value}</h3>
     </div>
   );
 };
@@ -147,7 +147,7 @@ export default function DashboardPage() {
 
     return (
       <div className="animate-in fade-in duration-500">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <StatCard 
             title={t('totalRevenue')} 
             value={formatRupiah(data.monthly_revenue)} 
@@ -174,9 +174,9 @@ export default function DashboardPage() {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-          <div className="lg:col-span-2 bg-slate-900/50 backdrop-blur-md border border-white/10 p-6 rounded-3xl flex flex-col">
-            <div className="flex justify-between items-center mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8 mb-6 sm:mb-8">
+          <div className="lg:col-span-2 bg-slate-900/50 backdrop-blur-md border border-white/10 p-4 sm:p-6 rounded-3xl flex flex-col">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
               <h3 className="font-bold text-lg text-white">{t('revenueStats')}</h3>
             </div>
             <div className="flex-1 w-full min-h-[300px]">
@@ -199,7 +199,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-6 rounded-3xl">
+          <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-4 sm:p-6 rounded-3xl">
             <h3 className="font-bold text-lg mb-4 text-white">{t('systemNotifications')}</h3>
             <div className="space-y-4">
               {data.notifications.map((notif: any, i: number) => (
@@ -218,7 +218,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-3xl">
-          <div className="p-6 flex justify-between items-center border-b border-white/5">
+          <div className="p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-white/5">
             <h3 className="font-bold text-lg text-white">{t('paymentStatus')}</h3>
           </div>
           <div className="overflow-x-auto min-h-[280px]">

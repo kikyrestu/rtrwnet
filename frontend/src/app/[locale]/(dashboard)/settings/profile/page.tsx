@@ -30,7 +30,7 @@ export default function IspProfilePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+        <h1 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
           <div className="p-2 bg-blue-600/20 rounded-xl border border-blue-500/20"><Building2 className="text-blue-400" size={24} /></div>
           Profil ISP
         </h1>
@@ -39,7 +39,7 @@ export default function IspProfilePage() {
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Company Info */}
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6 space-y-4">
+        <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6 space-y-4">
           <h2 className="text-lg font-bold text-white">Informasi Perusahaan</h2>
           {[
             { key: 'company_name', label: 'Nama ISP / Perusahaan', placeholder: 'RT/RW Net Sejahtera' },
@@ -59,7 +59,7 @@ export default function IspProfilePage() {
 
         {/* Invoice & Bank */}
         <div className="space-y-6">
-          <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6 space-y-4">
+          <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6 space-y-4">
             <h2 className="text-lg font-bold text-white">Pengaturan Invoice</h2>
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -80,7 +80,7 @@ export default function IspProfilePage() {
             </div>
           </div>
 
-          <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6 space-y-4">
+          <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6 space-y-4">
             <h2 className="text-lg font-bold text-white flex items-center gap-2"><Landmark size={18} className="text-gray-400" /> Informasi Bank</h2>
             {[
               { key: 'bank_name', label: 'Nama Bank', placeholder: 'BCA / BRI / Mandiri' },

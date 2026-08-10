@@ -233,7 +233,7 @@ export default function CustomerDetailPage() {
             {customer.name.charAt(0).toUpperCase()}
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">{customer.name}</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">{customer.name}</h1>
             <div className="flex items-center gap-2 mt-1">
               <span className={`px-3 py-0.5 rounded-full text-xs font-bold border ${badge.cls}`}>{badge.label}</span>
               <span className="text-sm text-gray-500 font-mono">@{customer.mikrotik_username}</span>
@@ -254,7 +254,7 @@ export default function CustomerDetailPage() {
 
       {/* Info Cards or Edit Form */}
       {editing ? (
-        <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-6 rounded-3xl space-y-4">
+        <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-4 sm:p-6 rounded-3xl space-y-4">
           <h3 className="text-lg font-bold text-white mb-2">{t('editData')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -359,11 +359,11 @@ export default function CustomerDetailPage() {
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
-            <button onClick={() => setEditing(false)} className="px-5 py-2.5 rounded-xl border border-white/10 text-gray-400 hover:bg-white/5 font-medium">
+            <button onClick={() => setEditing(false)} className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl border border-white/10 text-gray-400 hover:bg-white/5 font-medium">
               <X size={16} className="inline mr-1" />Batal
             </button>
             <button onClick={handleSave} disabled={saving}
-              className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 font-semibold shadow-lg shadow-blue-600/20">
+              className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl flex items-center gap-2 font-semibold shadow-lg shadow-blue-600/20">
               <Save size={16} />{saving ? t('saving') : t('saveChanges')}
             </button>
           </div>
@@ -396,7 +396,7 @@ export default function CustomerDetailPage() {
           {/* ACS TR-069 Card */}
           {customer.ont_sn && (
             <div className="md:col-span-2 bg-gradient-to-br from-indigo-900/30 to-purple-900/30 backdrop-blur-md border border-indigo-500/20 p-5 rounded-3xl space-y-4">
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <h3 className="text-sm font-semibold text-indigo-300 uppercase tracking-wider flex items-center gap-2">
                   <Activity size={16} /> {t('ontManagement')}
                 </h3>

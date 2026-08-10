@@ -73,7 +73,7 @@ export default function FeaturesPage() {
         </p>
         <button
           onClick={() => window.location.reload()}
-          className="mt-2 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all active:scale-95"
+          className="mt-2 bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl font-semibold text-sm transition-all active:scale-95"
         >
           Coba Lagi
         </button>
@@ -86,7 +86,7 @@ export default function FeaturesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+          <h1 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
             <div className="p-2 bg-blue-600/20 rounded-xl border border-blue-500/20">
               <ToggleRight className="text-blue-400" size={24} />
             </div>

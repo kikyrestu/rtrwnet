@@ -81,7 +81,7 @@ export default function InventoryDetailPage() {
           <ArrowLeft size={20} />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-white">{item.name}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-white">{item.name}</h1>
           <p className="text-gray-400 text-sm mt-0.5">{item.category.name} • {item.sku ? `SKU: ${item.sku}` : 'Tanpa SKU'}</p>
         </div>
       </div>
@@ -91,7 +91,7 @@ export default function InventoryDetailPage() {
         <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-5">
           <p className="text-xs text-gray-400 uppercase tracking-wider">Stok Saat Ini</p>
           <div className="flex items-center gap-2 mt-2">
-            <p className={`text-3xl font-bold ${item.is_low_stock ? 'text-red-400' : 'text-white'}`}>{item.quantity}</p>
+            <p className={`text-2xl sm:text-3xl font-bold ${item.is_low_stock ? 'text-red-400' : 'text-white'}`}>{item.quantity}</p>
             <span className="text-sm text-gray-500">{item.category.unit}</span>
           </div>
           {item.is_low_stock && (
@@ -103,7 +103,7 @@ export default function InventoryDetailPage() {
         </div>
         <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-5">
           <p className="text-xs text-gray-400 uppercase tracking-wider">Min. Stok</p>
-          <p className="text-3xl font-bold text-white mt-2">{item.min_stock}</p>
+          <p className="text-2xl sm:text-3xl font-bold text-white mt-2">{item.min_stock}</p>
           <p className="text-xs text-gray-500 mt-1">{item.category.unit}</p>
         </div>
         <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-5">

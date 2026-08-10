@@ -59,7 +59,7 @@ export default function AuditLogsPage() {
             <ClipboardList className="text-indigo-400" size={24} />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">Audit Log System</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">Audit Log System</h1>
             <p className="text-sm text-gray-400">Perekaman seluruh aktivitas user dan sistem</p>
           </div>
         </div>

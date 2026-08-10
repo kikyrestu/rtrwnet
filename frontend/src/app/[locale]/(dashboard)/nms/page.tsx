@@ -38,7 +38,7 @@ export default function NmsAlertPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+          <h1 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
             <div className="p-2 bg-amber-600/20 rounded-xl border border-amber-500/20">
               <Bell className="text-amber-400" size={24} />
             </div>
@@ -57,7 +57,7 @@ export default function NmsAlertPage() {
         ].map(s => (
           <div key={s.label} className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-5">
             <div className="flex items-center justify-between">
-              <div><p className="text-xs text-gray-400 uppercase tracking-wider">{s.label}</p><p className={`text-2xl font-bold ${s.color} mt-1`}>{s.value}</p></div>
+              <div><p className="text-xs text-gray-400 uppercase tracking-wider">{s.label}</p><p className={`text-xl sm:text-2xl font-bold ${s.color} mt-1`}>{s.value}</p></div>
               <div className={`p-3 ${s.bg} rounded-xl`}><s.icon className={s.color} size={22} /></div>
             </div>
           </div>

@@ -39,13 +39,13 @@ export default function TopologyMapPage() {
             <Network className="text-teal-400" size={24} />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">Topologi Jaringan (GIS)</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">Topologi Jaringan (GIS)</h1>
             <p className="text-sm text-gray-400">Peta interaktif persebaran Router, Tiang ODP, & Pelanggan.</p>
           </div>
         </div>
         <button 
           onClick={fetchTopology}
-          className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-5 py-2.5 rounded-xl border border-white/10 transition-all font-semibold shadow-lg active:scale-95"
+          className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl border border-white/10 transition-all font-semibold shadow-lg active:scale-95"
         >
           <RotateCw size={18} className={loading ? 'animate-spin' : ''} />
           <span>{loading ? 'Memuat Data...' : 'Muat Ulang Titik'}</span>

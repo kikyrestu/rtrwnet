@@ -74,7 +74,7 @@ export default function PaymentGatewayPage() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+          <h1 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
             <div className="p-2 bg-emerald-600/20 rounded-xl border border-emerald-500/20">
               <CreditCard className="text-emerald-400" size={24} />
             </div>
@@ -109,7 +109,7 @@ export default function PaymentGatewayPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* API Config */}
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6 space-y-4">
+        <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6 space-y-4">
           <h2 className="text-lg font-bold text-white flex items-center gap-2"><Settings2 size={18} className="text-gray-400" /> Konfigurasi API</h2>
           <div>
             <label className="block text-sm text-gray-400 mb-1">Provider</label>
@@ -151,7 +151,7 @@ export default function PaymentGatewayPage() {
         </div>
 
         {/* Payment Channels */}
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+        <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6">
           <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><Wallet size={18} className="text-gray-400" /> Channel Pembayaran</h2>
           <div className="space-y-2">
             {channelList.map(ch => (

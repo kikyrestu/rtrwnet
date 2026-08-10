@@ -13,7 +13,7 @@ export default function CreateCustomerPage() {
                     <UserPlus className="text-blue-400" size={24} />
                 </div>
                 <div>
-                    <h1 className="text-2xl font-bold text-white">{t('title')}</h1>
+                    <h1 className="text-xl sm:text-2xl font-bold text-white">{t('title')}</h1>
                     <p className="text-gray-400 text-sm">{t('subtitle')}</p>
                 </div>
             </div>

@@ -77,15 +77,15 @@ export default function PackagesPage() {
 
   return (
     <div className="animate-in fade-in duration-500 space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div className="flex items-center gap-3">
           <div className="p-3 rounded-2xl bg-violet-500/10"><Package className="text-violet-400" size={24} /></div>
           <div>
-            <h1 className="text-2xl font-bold text-white">Paket Internet</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">Paket Internet</h1>
             <p className="text-sm text-gray-400">{packages.length} paket terdaftar</p>
           </div>
         </div>
-        <button onClick={openCreate} className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-2xl flex items-center space-x-2 font-semibold shadow-lg shadow-blue-600/20 transition-all active:scale-95">
+        <button onClick={openCreate} className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-2xl flex items-center space-x-2 font-semibold shadow-lg shadow-blue-600/20 transition-all active:scale-95">
           <Plus size={18} /><span>Tambah Paket</span>
         </button>
       </div>
@@ -100,7 +100,7 @@ export default function PackagesPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {packages.map((p) => (
-            <div key={p.id} className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-6 rounded-3xl hover:border-white/20 transition-all group">
+            <div key={p.id} className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-4 sm:p-6 rounded-3xl hover:border-white/20 transition-all group">
               <div className="flex justify-between items-start mb-4">
                 <div className="p-2.5 rounded-xl bg-violet-500/10"><Package className="text-violet-400" size={20} /></div>
                 <div className="flex gap-1 ">
@@ -112,7 +112,7 @@ export default function PackagesPage() {
                 {p.name}
                 {!p.is_visible && <span className="ml-2 px-2 py-0.5 text-[10px] font-bold bg-amber-500/20 text-amber-400 rounded-md">HIDDEN</span>}
               </h3>
-              <p className="text-2xl font-bold text-blue-400 mb-3">{formatRupiah(p.price)}<span className="text-sm text-gray-500 font-normal">/bln</span></p>
+              <p className="text-xl sm:text-2xl font-bold text-blue-400 mb-3">{formatRupiah(p.price)}<span className="text-sm text-gray-500 font-normal">/bln</span></p>
               {p.description && <p className="text-sm text-gray-400 mb-3 line-clamp-2">{p.description}</p>}
               <div className="space-y-1 text-xs text-gray-500">
                 {p.speed_mbps && <p>Speed: <span className="text-gray-400 font-medium">{p.speed_mbps} Mbps</span></p>}
@@ -125,8 +125,8 @@ export default function PackagesPage() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowModal(false)}>
-          <div className="bg-slate-900 border border-white/10 rounded-3xl p-6 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-6">
+          <div className="bg-slate-900 border border-white/10 rounded-3xl p-4 sm:p-6 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
               <h3 className="text-xl font-bold text-white">{editId ? 'Edit Paket' : 'Tambah Paket Baru'}</h3>
               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-white"><X size={20} /></button>
             </div>
@@ -191,9 +191,9 @@ export default function PackagesPage() {
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">
-              <button onClick={() => setShowModal(false)} className="px-5 py-2.5 rounded-xl border border-white/10 text-gray-400 hover:bg-white/5 font-medium">Batal</button>
+              <button onClick={() => setShowModal(false)} className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl border border-white/10 text-gray-400 hover:bg-white/5 font-medium">Batal</button>
               <button onClick={handleSave} disabled={saving}
-                className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 text-white px-5 py-2.5 rounded-xl flex items-center space-x-2 font-semibold shadow-lg shadow-blue-600/20">
+                className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl flex items-center space-x-2 font-semibold shadow-lg shadow-blue-600/20">
                 <Save size={18} /><span>{saving ? 'Menyimpan...' : 'Simpan'}</span>
               </button>
             </div>
