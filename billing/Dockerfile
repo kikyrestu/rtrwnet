@@ -15,7 +15,8 @@ WORKDIR /var/www
 
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader --no-interaction \
+RUN cp .env.example .env \
+    && composer install --no-dev --optimize-autoloader --no-interaction \
     && php artisan key:generate --force \
     && php artisan storage:link 2>/dev/null || true \
     && chmod -R 777 storage bootstrap/cache
