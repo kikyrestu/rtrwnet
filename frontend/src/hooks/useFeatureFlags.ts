@@ -39,8 +39,9 @@ export function useFeatureFlags() {
 
   const isEnabled = useCallback(
     (key: string): boolean => {
+      if (features.length === 0) return true; // Fail-safe: show menus if backend is unreachable
       const flag = features.find((f) => f.key === key);
-      return flag ? flag.is_enabled : false;
+      return flag ? flag.is_enabled : true; // Default to true if not explicitly disabled
     },
     [features]
   );
