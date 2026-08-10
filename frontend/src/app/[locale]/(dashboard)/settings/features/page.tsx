@@ -67,10 +67,16 @@ export default function FeaturesPage() {
         <div className="p-4 rounded-full bg-white/5">
           <ToggleRight className="text-gray-600" size={40} />
         </div>
-        <h2 className="text-xl font-bold text-white">Belum Ada Modul</h2>
-        <p className="text-gray-500 text-center max-w-md">
-          Modul dan fitur belum tersedia. Pastikan backend API sudah berjalan dan endpoint <code className="text-blue-400/70 bg-blue-500/10 px-1.5 py-0.5 rounded text-xs">/api/features</code> mengembalikan data.
+        <h2 className="text-xl font-bold text-white">Modul Tidak Dapat Dimuat</h2>
+        <p className="text-gray-500 text-center max-w-md text-sm">
+          Tidak bisa mengambil daftar modul. Pastikan server backend sudah berjalan.
         </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-2 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all active:scale-95"
+        >
+          Coba Lagi
+        </button>
       </div>
     );
   }
