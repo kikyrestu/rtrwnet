@@ -19,17 +19,49 @@
   }
 }
 
+/* ===== PAGE TRANSITIONS ===== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+.animate-in {
+  animation: fadeInUp 0.4s ease-out both;
+}
+.animate-fade {
+  animation: fadeIn 0.3s ease-out both;
+}
+
 /* ===== MOBILE RESPONSIVE ===== */
 @media (max-width: 767px) {
   .responsive-table thead { display: none; }
-  .responsive-table tr {
+  .responsive-table tbody tr {
     display: block;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     border-radius: 1rem;
     border: 1px solid rgba(255,255,255,0.08);
     background: rgba(15,23,42,0.6);
+    backdrop-filter: blur(12px);
     padding: 1rem;
+    animation: fadeInUp 0.35s ease-out both;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
+  .responsive-table tbody tr:active {
+    transform: scale(0.98);
+    box-shadow: 0 0 20px rgba(59,130,246,0.1);
+  }
+  .responsive-table tbody tr:nth-child(1) { animation-delay: 0.05s; }
+  .responsive-table tbody tr:nth-child(2) { animation-delay: 0.1s; }
+  .responsive-table tbody tr:nth-child(3) { animation-delay: 0.15s; }
+  .responsive-table tbody tr:nth-child(4) { animation-delay: 0.2s; }
+  .responsive-table tbody tr:nth-child(5) { animation-delay: 0.25s; }
   .responsive-table td {
     display: flex;
     justify-content: space-between;
@@ -44,13 +76,13 @@
     content: attr(data-label);
     font-weight: 600;
     color: #94a3b8;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-right: 0.75rem;
     flex-shrink: 0;
   }
-  .responsive-table .cell-full { justify-content: flex-start; padding-left: 0; }
+  .responsive-table .cell-full { justify-content: flex-start; }
   .responsive-table .cell-full::before { display: none; }
   .responsive-table .cell-actions { justify-content: flex-end; border-bottom: none; }
   .responsive-table .cell-actions::before { display: none; }
@@ -58,3 +90,9 @@
 
 .tap-target { min-height: 44px; min-width: 44px; }
 .has-bottom-nav { padding-bottom: 5rem; }
+
+/* Smooth scroll */
+html { scroll-behavior: smooth; }
+
+/* Safe area for bottom nav */
+.safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
