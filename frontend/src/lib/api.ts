@@ -13,12 +13,25 @@ async function request<T = any>(endpoint: string, options: FetchOptions = {}): P
     url += `?${searchParams.toString()}`;
   }
 
+  // Add auth token
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    ...(fetchOptions.headers as Record<string, string> || {}),
+  };
+  
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem('user');
+    if (stored) {
+      try {
+        const user = JSON.parse(stored);
+        if (user.token) headers['Authorization'] = `Bearer ${user.token}`;
+      } catch {}
+    }
+  }
+
   const res = await fetch(url, {
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      ...fetchOptions.headers,
-    },
+    headers,
     ...fetchOptions,
   });
 

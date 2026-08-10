@@ -42,9 +42,13 @@ Route::post('/login', function (Request $request) {
     }
     $user = \Illuminate\Support\Facades\Auth::user();
     \App\Services\AuditService::log('login', 'Auth', "User {$user->email} logged in");
+    
+    // Create Sanctum token for API access
+    $token = $user->createToken('web')->plainTextToken;
+    
     return response()->json([
         'message' => 'Login berhasil',
-        'user' => ['id' => $user->id, 'name' => $user->name, 'email' => $user->email, 'role' => $user->role],
+        'user' => ['id' => $user->id, 'name' => $user->name, 'email' => $user->email, 'role' => $user->role, 'token' => $token],
     ]);
 });
 
