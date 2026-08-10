@@ -22,7 +22,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                 <div className="print:hidden">
                     <Navbar />
                 </div>
-                <main className="flex-1 p-4 md:p-8 overflow-y-auto print:p-0 print:overflow-visible">
+                <main className="flex-1 p-3 md:p-8 overflow-y-auto print:p-0 print:overflow-visible">
                     {children}
                 </main>
             </div>

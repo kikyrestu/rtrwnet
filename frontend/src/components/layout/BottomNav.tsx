@@ -41,11 +41,13 @@ export default function BottomNav() {
         onClick={() => setOpen(false)}
       />
 
-      {/* Slide-up Menu */}
-      <div className={`md:hidden fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300 ease-out ${
-        open ? 'translate-y-0' : 'translate-y-full'
+      {/* Slide-up Menu — sits above the bottom bar */}
+      <div className={`md:hidden fixed bottom-16 left-0 right-0 z-40 transition-all duration-300 ease-out ${
+        open 
+          ? 'translate-y-0 opacity-100' 
+          : 'translate-y-8 opacity-0 pointer-events-none'
       }`}>
-        <div className="bg-slate-900/98 backdrop-blur-xl border-t border-white/10 rounded-t-3xl safe-area-bottom">
+        <div className="bg-slate-900/98 backdrop-blur-xl border border-white/10 rounded-3xl mx-3 mb-2 shadow-2xl shadow-black/50">
           {/* Handle */}
           <div className="flex justify-center pt-3 pb-1">
             <button 
@@ -62,14 +64,14 @@ export default function BottomNav() {
                 <button
                   key={path}
                   onClick={() => { router.push(path); setOpen(false); }}
-                  className={`tap-target flex flex-col items-center justify-center gap-1 py-3 rounded-2xl transition-all duration-200 active:scale-95 ${
+                  className={`tap-target flex flex-col items-center justify-center gap-1.5 py-3 rounded-2xl transition-all duration-200 active:scale-95 ${
                     active 
                       ? 'bg-blue-600/20 text-blue-400' 
                       : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
                   }`}
                 >
                   <Icon size={22} />
-                  <span className="text-[10px] font-medium truncate max-w-[80px]">{label}</span>
+                  <span className="text-[11px] font-medium truncate max-w-[80px]">{label}</span>
                 </button>
               );
             })}
