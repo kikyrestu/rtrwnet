@@ -12,7 +12,7 @@ import clsx from 'clsx';
 import { useState, useEffect } from 'react';
 import { useFeatureFlags } from '@/hooks/useFeatureFlags';
 import { useTranslations, useLocale } from 'next-intl';
-import { useRouter, usePathname } from '@/i18n/routing';
+import { useRouter, usePathname } from 'next/navigation';
 
 interface MenuItem {
   name: string;
@@ -84,9 +84,12 @@ export default function Sidebar() {
     );
   };
 
+  const router = useRouter();
+
   const switchLocale = () => {
     const newLocale = locale === 'id' ? 'en' : 'id';
-    router.replace(pathname, { locale: newLocale });
+    const newPath = pathname.replace(new RegExp(`^/${locale}`), `/${newLocale}`);
+    router.replace(newPath);
   };
 
   return (

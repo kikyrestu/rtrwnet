@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
-import { useRouter, usePathname } from '@/i18n/routing';
+import { useRouter, usePathname } from 'next/navigation';
 import { useFeatureFlags } from '@/hooks/useFeatureFlags';
 import { 
   LayoutDashboard, Users, Receipt, Network, Settings,
@@ -131,7 +131,8 @@ export default function BottomNav() {
             <button
               onClick={() => {
                 const newLocale = locale === 'id' ? 'en' : 'id';
-                router.replace(pathname, { locale: newLocale });
+                const newPath = pathname.replace(new RegExp(`^/${locale}`), `/${newLocale}`);
+                router.replace(newPath);
                 setOpen(false);
               }}
               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white border border-white/10 hover:border-white/20 transition-all text-xs font-medium"
