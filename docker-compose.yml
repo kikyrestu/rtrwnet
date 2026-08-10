@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # Laravel Backend API
   backend:
     build:
       context: ./billing
@@ -28,7 +27,6 @@ services:
     networks:
       - rtrwnet
 
-  # Next.js Frontend
   frontend:
     build:
       context: ./frontend
@@ -36,15 +34,14 @@ services:
     container_name: rtrwnet_frontend
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
-      NEXT_PUBLIC_API_URL: http://165.101.18.101:8000/api
+      NEXT_PUBLIC_API_URL: http://165.101.18.101:8001/api
     depends_on:
       - backend
     networks:
       - rtrwnet
 
-  # MySQL Database
   db:
     image: mysql:8.0
     container_name: rtrwnet_db
@@ -64,13 +61,12 @@ services:
       timeout: 5s
       retries: 5
 
-  # Nginx Reverse Proxy (optional - untuk akses port 80)
   nginx:
     image: nginx:alpine
     container_name: rtrwnet_nginx
     restart: unless-stopped
     ports:
-      - "8080:80"
+      - "8081:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
     depends_on:
