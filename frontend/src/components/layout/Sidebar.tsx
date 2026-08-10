@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
-  LayoutDashboard, Users, Receipt, Settings, Wifi, LogOut, 
+  LayoutDashboard, Users, Receipt, Settings, LogOut, 
   BarChart3, Network, Router, Radio, MapPin, RefreshCcw, MonitorCog,
   Package, Map, UserCog, ChevronDown, Boxes, ToggleRight,
   Ticket, Headphones, MessageCircle, ShieldOff, CreditCard,
@@ -93,8 +93,8 @@ export default function Sidebar() {
   return (
     <aside className="w-64 border-r border-white/10 p-6 flex flex-col z-20 fixed top-0 left-0 h-screen bg-black/40 backdrop-blur-xl">
       <div className="flex items-center space-x-3 mb-10 px-2">
-        <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-2 rounded-xl shadow-lg shadow-blue-500/20">
-          <Wifi className="text-white" size={24} />
+        <div className="bg-white rounded-xl shadow-lg shadow-blue-500/20 p-1.5 flex-shrink-0">
+          <img src="/logo-buildyweb.png" alt="BuildyWeb" className="w-8 h-8 object-contain" />
         </div>
         <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
           {t('brand')}
