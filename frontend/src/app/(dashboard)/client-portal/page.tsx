@@ -17,8 +17,8 @@ export default function ClientPortalPage() {
   const fetchData = async () => {
     try {
       const [confRes, statsRes] = await Promise.all([
-        fetch('http://127.0.0.1:8000/api/client-portal/config'),
-        fetch('http://127.0.0.1:8000/api/client-portal/stats')
+        fetch('/api/client-portal/config'),
+        fetch('/api/client-portal/stats')
       ]);
       if (confRes.ok) setConfig(await confRes.json());
       if (statsRes.ok) setStats(await statsRes.json());
@@ -30,7 +30,7 @@ export default function ClientPortalPage() {
   const handleSaveConfig = async () => {
     setSaving(true);
     try {
-      await fetch('http://127.0.0.1:8000/api/client-portal/config', {
+      await fetch('/api/client-portal/config', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify(config)

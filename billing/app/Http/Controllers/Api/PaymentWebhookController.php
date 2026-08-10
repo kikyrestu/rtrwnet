@@ -70,6 +70,31 @@ class PaymentWebhookController extends Controller
             'verified_at' => now(),
         ]);
 
+        // ============================================
+        // CRITICAL FIX: UN-ISOLATE CUSTOMER & SEND WA
+        // ============================================
+        $customer = $invoice->customer;
+        if ($customer) {
+            // Update db status if isolated
+            if ($customer->status === 'isolated') {
+                $customer->status = 'active';
+                $customer->save();
+            }
+
+            // Un-isolate on Mikrotik
+            $mikrotik = new \App\Services\MikrotikService();
+            $mikrotik->unisolateCustomer($customer);
+
+            // Send WA Notification
+            try {
+                $wa = \App\Services\WhatsAppService::make();
+                $pesan = "Yth. Pelanggan {$customer->name},\n\nTerima kasih, pembayaran untuk tagihan {$invoice->invoice_number} sebesar Rp " . number_format($invoice->amount, 0, ',', '.') . " telah kami terima via Payment Gateway.\nLayanan internet Anda sudah diaktifkan kembali.\n\nAdmin PAKAAM";
+                $wa->send($customer->phone, $pesan);
+            } catch (\Exception $e) {
+                Log::error("Gagal kirim WA lunas via webhook ke {$customer->phone}");
+            }
+        }
+
         return response()->json(['success' => true, 'message' => 'Payment processed successfully']);
     }
 }

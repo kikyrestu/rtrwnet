@@ -31,17 +31,43 @@ class HotspotController extends Controller
         ]);
 
         $profile = HotspotProfile::create($request->all());
+
+        if ($profile->router_id) {
+            $router = \App\Models\Router::find($profile->router_id);
+            if ($router) {
+                $mikrotik = new \App\Services\MikrotikService();
+                $mikrotik->syncHotspotProfile($router, $profile);
+            }
+        }
+
         return response()->json($profile->load('router'), 201);
     }
 
     public function profileUpdate(Request $request, HotspotProfile $profile)
     {
         $profile->update($request->all());
+
+        if ($profile->router_id) {
+            $router = \App\Models\Router::find($profile->router_id);
+            if ($router) {
+                $mikrotik = new \App\Services\MikrotikService();
+                $mikrotik->syncHotspotProfile($router, $profile);
+            }
+        }
+
         return response()->json($profile->load('router'));
     }
 
     public function profileDestroy(HotspotProfile $profile)
     {
+        if ($profile->router_id) {
+            $router = \App\Models\Router::find($profile->router_id);
+            if ($router) {
+                $mikrotik = new \App\Services\MikrotikService();
+                $mikrotik->removeHotspotProfile($router, $profile->name);
+            }
+        }
+
         $profile->delete();
         return response()->json(['message' => 'Profil hotspot berhasil dihapus.']);
     }
@@ -89,6 +115,17 @@ class HotspotController extends Controller
             ]);
         }
 
+        if ($profile->router_id) {
+            $router = \App\Models\Router::find($profile->router_id);
+            if ($router) {
+                $mikrotik = new \App\Services\MikrotikService();
+                $vouchersForRouter = array_map(function($v) {
+                    return ['username' => $v->username, 'password' => $v->password];
+                }, $vouchers);
+                $mikrotik->syncHotspotUsers($router, $vouchersForRouter, $profile->name);
+            }
+        }
+
         return response()->json([
             'message' => "Berhasil generate {$request->quantity} voucher.",
             'vouchers' => HotspotVoucher::with('profile')
@@ -99,6 +136,15 @@ class HotspotController extends Controller
 
     public function voucherDestroy(HotspotVoucher $voucher)
     {
+        $profile = $voucher->profile;
+        if ($profile && $profile->router_id) {
+            $router = \App\Models\Router::find($profile->router_id);
+            if ($router) {
+                $mikrotik = new \App\Services\MikrotikService();
+                $mikrotik->removeHotspotUser($router, $voucher->username);
+            }
+        }
+
         $voucher->delete();
         return response()->json(['message' => 'Voucher berhasil dihapus.']);
     }

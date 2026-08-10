@@ -11,6 +11,7 @@ class FeatureFlag extends Model
 
     protected $casts = [
         'is_enabled' => 'boolean',
+        'config' => 'array',
     ];
 
     /**
@@ -26,10 +27,23 @@ class FeatureFlag extends Model
     }
 
     /**
+     * Get feature config.
+     * Cached for 60 seconds.
+     */
+    public static function getConfig(string $key): array
+    {
+        return Cache::remember("feature_config_{$key}", 60, function () use ($key) {
+            $flag = static::where('key', $key)->first();
+            return $flag && $flag->config ? $flag->config : [];
+        });
+    }
+
+    /**
      * Clear cache when a feature flag is updated.
      */
     public static function clearCache(string $key): void
     {
         Cache::forget("feature_flag_{$key}");
+        Cache::forget("feature_config_{$key}");
     }
 }

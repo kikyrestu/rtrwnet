@@ -98,7 +98,7 @@ export default function RegionsPage() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowModal(false)}>
-          <div className="bg-slate-900 border border-white/10 rounded-3xl p-6 w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
+          <div className="bg-slate-900 border border-white/10 rounded-3xl p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-bold text-white">{editId ? 'Edit Wilayah' : 'Tambah Wilayah Baru'}</h3>
               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-white"><X size={20} /></button>

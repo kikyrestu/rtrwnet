@@ -22,7 +22,7 @@ export default function PortalDashboardPage() {
 
     const customer = JSON.parse(custStr);
     
-    fetch(`http://127.0.0.1:8000/api/portal/dashboard?customer_id=${customer.id}`)
+    fetch(`/api/portal/dashboard?customer_id=${customer.id}`)
       .then(res => res.json())
       .then(json => {
         setData(json);
@@ -52,8 +52,8 @@ export default function PortalDashboardPage() {
 
   const handleAcsWifi = async () => {
     const customer = JSON.parse(localStorage.getItem('portal_customer') || '{}');
-    // Extract raw ID from format 'CUST-001'
-    const rawId = parseInt(customer.id.replace('CUST-', ''), 10);
+    // Extract raw ID safely handling both integer (11) and string ('CUST-011') types
+    const rawId = parseInt(String(customer.id).replace('CUST-', ''), 10);
 
     const { value: formValues } = await Swal.fire({
       title: 'Ganti WiFi & Password',
@@ -79,7 +79,7 @@ export default function PortalDashboardPage() {
       try {
         Swal.fire({ title: 'Memproses Provisioning...', allowOutsideClick: false, background: '#0f172a', color: '#fff', didOpen: () => Swal.showLoading() });
         
-        const res = await fetch(`http://127.0.0.1:8000/api/acs/device/${rawId}/wifi`, {
+        const res = await fetch(`/api/acs/device/${rawId}/wifi`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
           body: JSON.stringify(formValues)
@@ -149,7 +149,12 @@ export default function PortalDashboardPage() {
           
           <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
             <p className="text-xs text-gray-400 mb-1">Paket Berlangganan</p>
-            <p className="text-white font-medium">{customer.package}</p>
+            <div className="flex items-center justify-between">
+              <p className="text-white font-medium">{customer.package}</p>
+              <button onClick={() => router.push('/portal/dashboard/packages')} className="text-xs font-semibold bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 hover:text-blue-300 px-3 py-1.5 rounded-lg border border-blue-500/20 transition-all">
+                Upgrade / Katalog
+              </button>
+            </div>
           </div>
         </div>
 

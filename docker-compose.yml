@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  # Laravel Backend API
+  backend:
+    build:
+      context: ./billing
+      dockerfile: Dockerfile
+    container_name: rtrwnet_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: http://localhost:8000
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: rtrwnet
+      DB_USERNAME: rtrwnet
+      DB_PASSWORD: rtrwnet_demo_2024
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - backend_storage:/var/www/storage
+    networks:
+      - rtrwnet
+
+  # Next.js Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: rtrwnet_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://165.101.18.101:8000/api
+    depends_on:
+      - backend
+    networks:
+      - rtrwnet
+
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: rtrwnet_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_demo_2024
+      MYSQL_DATABASE: rtrwnet
+      MYSQL_USER: rtrwnet
+      MYSQL_PASSWORD: rtrwnet_demo_2024
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - rtrwnet
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Nginx Reverse Proxy (optional - untuk akses port 80)
+  nginx:
+    image: nginx:alpine
+    container_name: rtrwnet_nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - rtrwnet
+
+volumes:
+  db_data:
+  backend_storage:
+
+networks:
+  rtrwnet:
+    driver: bridge

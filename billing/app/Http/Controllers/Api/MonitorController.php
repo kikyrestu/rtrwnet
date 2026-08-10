@@ -13,6 +13,8 @@ class MonitorController extends Controller
     {
         $api = new RouterosAPI();
         $api->debug = false;
+        $api->attempts = 1; // Fail fast
+        $api->timeout = 2; // 2 seconds timeout
 
         if (!$api->connect($router->host, $router->api_username, $router->api_password, $router->api_port)) {
             return response()->json(['message' => 'Gagal terkoneksi ke Router!'], 500);
@@ -95,6 +97,8 @@ class MonitorController extends Controller
         foreach ($routers as $router) {
             $api = new RouterosAPI();
             $api->debug = false;
+            $api->attempts = 1; // Fail fast to prevent socket hang up
+            $api->timeout = 2;
             
             if ($api->connect($router->host, $router->api_username, $router->api_password, $router->api_port)) {
                 $activeConnections = $api->comm('/ppp/active/print');

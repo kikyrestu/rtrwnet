@@ -219,7 +219,7 @@ export default function TicketsPage() {
       {/* Create Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowModal(false)}>
-          <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-lg" onClick={e => e.stopPropagation()}>
+          <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-bold text-white">Buat Tiket Baru</h2>
               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-white"><X size={20} /></button>

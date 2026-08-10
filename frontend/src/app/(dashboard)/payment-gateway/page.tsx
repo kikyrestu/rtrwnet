@@ -43,8 +43,8 @@ export default function PaymentGatewayPage() {
   const fetchData = async () => {
     try {
       const [confRes, transRes] = await Promise.all([
-        fetch('http://127.0.0.1:8000/api/payment-gateway/config'),
-        fetch('http://127.0.0.1:8000/api/payment-gateway/transactions')
+        fetch('/api/payment-gateway/config'),
+        fetch('/api/payment-gateway/transactions')
       ]);
       if (confRes.ok) setConfig(await confRes.json());
       if (transRes.ok) {
@@ -60,7 +60,7 @@ export default function PaymentGatewayPage() {
   const handleSaveConfig = async () => {
     setSaving(true);
     try {
-      await fetch('http://127.0.0.1:8000/api/payment-gateway/config', {
+      await fetch('/api/payment-gateway/config', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify(config)

@@ -11,8 +11,8 @@ export default function NmsAlertPage() {
   const fetchData = async () => {
     try {
       const [devRes, alertRes] = await Promise.all([
-        fetch('http://127.0.0.1:8000/api/nms/devices'),
-        fetch('http://127.0.0.1:8000/api/nms/alerts')
+        fetch('/api/nms/devices'),
+        fetch('/api/nms/alerts')
       ]);
       if (devRes.ok) setDevices(await devRes.json());
       if (alertRes.ok) setAlerts(await alertRes.json());

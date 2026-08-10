@@ -62,8 +62,8 @@
                 @endif
                 <div class="company-detail">
                     @if($settings->address){{ $settings->address }}<br>@endif
-                    @if($settings->phone)📞 {{ $settings->phone }}@endif
-                    @if($settings->email) &nbsp;|&nbsp; ✉ {{ $settings->email }}@endif
+                    @if($settings->phone)Telp: {{ $settings->phone }}@endif
+                    @if($settings->email) &nbsp;|&nbsp; Email: {{ $settings->email }}@endif
                 </div>
             </td>
             <td style="border:none; padding: 0 0 15px 0; text-align: right; vertical-align: top;">
@@ -71,7 +71,7 @@
                 <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">#{{ $settings->invoice_prefix }}-{{ str_pad($invoice->id, 5, '0', STR_PAD_LEFT) }}</div>
                 <div style="margin-top: 8px;">
                     <span class="status-badge {{ $invoice->status === 'paid' ? 'status-paid' : 'status-unpaid' }}">
-                        {{ $invoice->status === 'paid' ? '✓ LUNAS' : 'BELUM BAYAR' }}
+                        {{ $invoice->status === 'paid' ? 'LUNAS' : 'BELUM BAYAR' }}
                     </span>
                 </div>
             </td>
@@ -86,7 +86,7 @@
                 <div class="info-value">
                     <strong>{{ $invoice->customer->name }}</strong><br>
                     {{ $invoice->customer->address ?? '-' }}<br>
-                    📞 {{ $invoice->customer->phone ?? '-' }}
+                    Telp: {{ $invoice->customer->phone ?? '-' }}
                 </div>
             </td>
             <td style="border:none; padding:0; vertical-align: top; text-align: right;">

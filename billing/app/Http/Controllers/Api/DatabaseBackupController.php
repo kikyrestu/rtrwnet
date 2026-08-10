@@ -31,7 +31,7 @@ class DatabaseBackupController extends Controller
         try {
             Storage::disk('local')->makeDirectory('backups');
             $filename = 'backup_' . date('Y-m-d_H-i-s') . '.sql';
-            $path = storage_path('app/backups/' . $filename);
+            $path = Storage::disk('local')->path('backups/' . $filename);
 
             $dump = new IMysqldump\Mysqldump(
                 'mysql:host=' . env('DB_HOST') . ';dbname=' . env('DB_DATABASE'),

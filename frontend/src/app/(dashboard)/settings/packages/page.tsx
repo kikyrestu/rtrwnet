@@ -13,9 +13,12 @@ interface PackageData {
   rate_limit: string | null;
   local_address: string | null;
   remote_address: string | null;
+  description: string | null;
+  speed_mbps: number | null;
+  is_visible: boolean;
 }
 
-const emptyForm = { name: '', price: '', mikrotik_profile_name: '', rate_limit: '', local_address: '', remote_address: '' };
+const emptyForm = { name: '', price: '', mikrotik_profile_name: '', rate_limit: '', local_address: '', remote_address: '', description: '', speed_mbps: '', is_visible: true };
 
 export default function PackagesPage() {
   const [packages, setPackages] = useState<PackageData[]>([]);
@@ -36,14 +39,28 @@ export default function PackagesPage() {
 
   const openCreate = () => { setForm(emptyForm); setEditId(null); setShowModal(true); };
   const openEdit = (p: PackageData) => {
-    setForm({ name: p.name, price: String(p.price), mikrotik_profile_name: p.mikrotik_profile_name || '', rate_limit: p.rate_limit || '', local_address: p.local_address || '', remote_address: p.remote_address || '' });
+    setForm({ 
+      name: p.name, 
+      price: String(p.price), 
+      mikrotik_profile_name: p.mikrotik_profile_name || '', 
+      rate_limit: p.rate_limit || '', 
+      local_address: p.local_address || '', 
+      remote_address: p.remote_address || '',
+      description: p.description || '',
+      speed_mbps: p.speed_mbps ? String(p.speed_mbps) : '',
+      is_visible: p.is_visible !== undefined ? p.is_visible : true
+    });
     setEditId(p.id); setShowModal(true);
   };
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const payload = { ...form, price: Number(form.price) };
+      const payload = { 
+        ...form, 
+        price: Number(form.price),
+        speed_mbps: form.speed_mbps ? Number(form.speed_mbps) : null
+      };
       if (editId) await api.put(`/packages/${editId}`, payload);
       else await api.post('/packages', payload);
       setShowModal(false); fetchData();
@@ -91,10 +108,14 @@ export default function PackagesPage() {
                   <button onClick={() => handleDelete(p.id)} className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-red-400"><Trash2 size={14} /></button>
                 </div>
               </div>
-              <h3 className="text-lg font-bold text-white mb-1">{p.name}</h3>
+              <h3 className="text-lg font-bold text-white mb-1">
+                {p.name}
+                {!p.is_visible && <span className="ml-2 px-2 py-0.5 text-[10px] font-bold bg-amber-500/20 text-amber-400 rounded-md">HIDDEN</span>}
+              </h3>
               <p className="text-2xl font-bold text-blue-400 mb-3">{formatRupiah(p.price)}<span className="text-sm text-gray-500 font-normal">/bln</span></p>
+              {p.description && <p className="text-sm text-gray-400 mb-3 line-clamp-2">{p.description}</p>}
               <div className="space-y-1 text-xs text-gray-500">
-                {p.rate_limit && <p>Speed: <span className="text-gray-400">{p.rate_limit}</span></p>}
+                {p.speed_mbps && <p>Speed: <span className="text-gray-400 font-medium">{p.speed_mbps} Mbps</span></p>}
                 {p.mikrotik_profile_name && <p>Profile: <span className="text-gray-400 font-mono">{p.mikrotik_profile_name}</span></p>}
               </div>
             </div>
@@ -104,7 +125,7 @@ export default function PackagesPage() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowModal(false)}>
-          <div className="bg-slate-900 border border-white/10 rounded-3xl p-6 w-full max-w-lg shadow-2xl" onClick={e => e.stopPropagation()}>
+          <div className="bg-slate-900 border border-white/10 rounded-3xl p-6 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-bold text-white">{editId ? 'Edit Paket' : 'Tambah Paket Baru'}</h3>
               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-white"><X size={20} /></button>
@@ -122,6 +143,29 @@ export default function PackagesPage() {
                     className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500/50" placeholder="150000" />
                 </div>
               </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-1">Kecepatan (Mbps)</label>
+                  <input type="number" value={form.speed_mbps} onChange={e => setForm({...form, speed_mbps: e.target.value})}
+                    className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500/50" placeholder="20" />
+                </div>
+                <div className="flex items-end">
+                  <label className="flex items-center space-x-3 cursor-pointer p-3 bg-white/5 rounded-xl border border-white/10 w-full hover:bg-white/10 transition-colors">
+                    <input type="checkbox" checked={form.is_visible} onChange={e => setForm({...form, is_visible: e.target.checked})} className="w-5 h-5 rounded border-gray-600 text-blue-600 focus:ring-blue-600/50 bg-slate-800" />
+                    <span className="text-sm font-medium text-white">Tampilkan di Portal Pelanggan</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-1">Deskripsi Marketing</label>
+                <textarea value={form.description} onChange={e => setForm({...form, description: e.target.value})}
+                  className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500/50 min-h-[80px]" placeholder="Cocok untuk keluarga kecil dengan 3-5 gadget..." />
+              </div>
+
+              <div className="border-t border-white/10 my-4 pt-4">
+                <h4 className="text-sm font-semibold text-gray-300 mb-4">Pengaturan Mikrotik (Opsional)</h4>
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-1">Nama Profil Mikrotik</label>
                 <input type="text" value={form.mikrotik_profile_name} onChange={e => setForm({...form, mikrotik_profile_name: e.target.value})}
@@ -143,6 +187,7 @@ export default function PackagesPage() {
                   <input type="text" value={form.remote_address} onChange={e => setForm({...form, remote_address: e.target.value})}
                     className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500/50 font-mono text-sm" placeholder="pool-pppoe" />
                 </div>
+              </div>
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">

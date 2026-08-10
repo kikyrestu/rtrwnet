@@ -160,9 +160,12 @@ export default function CustomerDetailPage() {
         billing_cycle_date: Number(form.billing_cycle_date),
         package_id: form.package_id ? Number(form.package_id) : null,
         router_id: form.router_id ? Number(form.router_id) : null,
-        dp_id: form.dp_id ? Number(form.dp_id) : null,
+        distribution_point_id: form.dp_id ? Number(form.dp_id) : null,
         region_id: form.region_id ? Number(form.region_id) : null,
       };
+
+      delete (payload as any).dp_id;
+
       const updated = await api.put(`/customers/${id}`, payload);
       setCustomer({ ...customer, ...updated });
       setEditing(false);

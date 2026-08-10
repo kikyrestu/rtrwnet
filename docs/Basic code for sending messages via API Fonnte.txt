@@ -1,0 +1,344 @@
+﻿Basic code for sending messages via API
+<?php
+
+
+$curl = curl_init();
+
+
+curl_setopt_array($curl, array(
+  CURLOPT_URL => 'https://api.fonnte.com/send',
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => '',
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 0,
+  CURLOPT_FOLLOWLOCATION => true,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => 'POST',
+  CURLOPT_POSTFIELDS => array(
+'target' => '08123456789|Fonnte|Admin,08123456789|Lili|User',
+'message' => 'test message to {name} as {var1}',
+'url' => 'https://md.fonnte.com/images/wa-logo.png',
+'filename' => 'filename',
+'schedule' => 0,
+'typing' => false,
+'delay' => '2',
+'countryCode' => '62',
+'file' => new CURLFile("localfile.jpg"),
+'location' => '-7.983908, 112.621391',
+'followup' => 0,
+'inboxid' => 0,
+'duration' => 1,
+),
+  CURLOPT_HTTPHEADER => array(
+    'Authorization: TOKEN'
+  ),
+));
+
+
+$response = curl_exec($curl);
+if (curl_errno($curl)) {
+  $error_msg = curl_error($curl);
+}
+curl_close($curl);
+
+
+if (isset($error_msg)) {
+ echo $error_msg;
+}
+echo $response;
+
+
+You can see it through postman and see an example on how to send whatsapp messages with PHP API
+Available parameters:
+* target (required) (string) - target number, comma separated, variable supported. read more
+* message (optional) (string) - text message, support variable. read more
+* url (optional) (string) - support image, file, audio, video, optional. 
+read more
+* filename (optional) (string) - custom filename, optional. 
+read more
+* schedule (optional) (int) - unix timestamp to send messages on a schedule. 
+read more
+* delay (optional) (string) - min 0, add - to random delay for example: 1-10 will produce a random delay between 1 and 10 seconds, optional. 
+read more
+* countryCode (string) -  replace first zero with country code, default 62, set 0 to disable replacement, optional. 
+read more
+* location (optional) (string) - format : latitude,longitude. read more
+* typing (optional) (bool) :  typing indicator, default : false. 
+read more
+* choices (optional) (string) : polling choices, minimum 2, maximum 12, separated by commas. 
+read more
+* select (optional) (string) :  polling selection limit, single or multiple. 
+read more
+* pollname (optional) (string) : pollname. read more
+* file (optional) (binary) : upload file directly from local/form. 
+read more
+* connectOnly (optional) (bool) : use the API only on connected devices. requesting this API will return status : false when the device is disconnected.. 
+read more
+* followup (optional) (int) : add seconds before sending the message. 
+read more
+* data (optional) (string) : combine all requests into one request. 
+read more
+* sequence (optional) (bool) : requests must be executed sequentially. default : false. 
+read more
+* preview (optional) (bool) : links in messages should have a preview. default : true. 
+read more
+* inboxid (optional) (int) : id of the inbox message you want to reply. read more
+* duration (optional) (int) : duration for custom typing duration. read more
+NOTES:
+TOKEN must be filled with your own token. see here how to get token .
+TOKENS can be multiple, separated by commas, for example: xxxxxx,yyyyyy.
+TOKEN multiples will work as a rotator, each target will be sent by a random device based on the registered token.
+Multiple TOKENS can only be used with the same account.
+You cannot list multiple TOKENS if the devices do not belong to the same account.
+Authorization does not require a Bearer. You can pass the token directly.
+Sending multiple numbers can be done by adding a comma. for example: 6282xxxxxx,6285xxxxxxxx,6283xxxxxxxxx.
+Sending variables is supported with the API.
+Filename only works on file and audio types.
+Consider file limitation rules when sending attachments.
+Parameter Explanation
+target (string)
+Target is a parameter for receiving WhatsApp messages.
+target has 3 values:
+   1. whatsapp number
+   2. group id
+   3. rotator id
+its value can consist of one or a combination of all types.
+the value must be a string !
+You cannot set a value as an int/number.
+there is no limit to the target value.
+the values ​​are separated by commas.
+working example : 'target' => '081xxxx' or 'target' => '081xxxx,082xxxx,083xxxx,123xxxx@g.us'
+not working example : 'target' => 081xxxx
+message (string)
+Message is a parameter for filling in the message that will be sent to the recipient.
+This message also accepts emojis.
+The message value cannot exceed 60,000 characters.
+please be aware that each specific emoji/character encoding (chinese/japanese/korean/arabian/etc) may contain multiple characters.
+Any characters not supported in UTF-8 may not be sent correctly or even cause errors.
+message also serves as a description for the file/image if you define a url/file.
+url (string)
+Note: this parameter is only available on super/advanced/ultra packages .
+url is a parameter for sending attachments to recipients.
+url must be a public url.
+You can't use localhost url/private ip.
+The url must be the actual file, not the web page containing the file.
+working example: https://fonnte.com/image.png
+example that doesn't work : https://fonnte.com/somepagewithimage or some url like s3 files.
+the url must also follow the file limitations .
+filename (string)
+filename is a parameter to define the file name that received by recipient.
+this filename only working on non image or video.
+image and video does not contains filename.
+contohnya : 'filename' => 'myfile.pdf'
+schedule (int)
+schedule is a parameter to send the message later on scheduled time.
+the value of this parameter is a unix timestamp.
+if you have string time like 12 august 2024 or 2024-07-15T15:22 or else, you must convert it to unix timestamp.
+please beware, you might forgot about timezone. do mind timezone in the conversion.
+example in php : strtotime('2025-01-09T20:46:00+0700') will convert to 1736430360.
+you may check the unix timestamp result on epochconverter.com.
+ Screenshot 86 
+
+as you can see in the image above, the time is correct as stated in the conversion.
+delay (string)
+delay is a parameter to add delay on sending the message.
+the value of the delay must be a string!
+the reason is because the delay value may be fixed or between two values.
+delay also only working on multiple target.
+will not work on single target.
+first target will always immediately sent, no matter how much the delay is set.
+working example : 'delay' => '5' or 'delay' => '5-100'
+not working example : 'delay' => 5
+if you set the value 5, it means it will delay for 5 seconds before proceeding the next target.
+if you set the value 5-10, it means it will delay for between 5 to 100 seconds before proceeding the next target.
+it may 5/8/30/66/96 seconds. the system will automatically set this delay.
+if you add delay as an int/number, you'll get status : false.
+countryCode (string)
+countryCode is a parameter to define which country of your recipient is.
+the value of the countryCode must be a string!
+by default it's 62.
+you may not explicitly define the countryCode value.
+this countryCode is replacing the first 0 (if any) from a target number or adding the countryCode if not exist.
+but if you need to send it outside indonesia, you are mandatory to set this countryCode.
+working example : 'countryCode' => '60', 'target' => '60111111111'
+not working example : 'countryCode' => 60, 'target' => '60111111111'
+if countryCode is not set, the target will be 6260111111111, which is invalid number.
+if somehow you want to bypass any of this filter, you can set : 'countryCode' => '0', 'target' => '60111111111'.
+this will disable fonnte's filter and you must set the target full with countryCode.
+working example : 'countryCode' => '0', 'target' => '628123456789,60111111111'
+not working example : 'countryCode' => '0', 'target' => '08123456789,60111111111'
+by bypassing fonnte's filter, you can easily set the target value with multiple country number.
+location (string)
+location is a parameter to send location to the recipient.
+the format is latitude,longitude.
+example : 'location' => '-7.983908, 112.621391'
+typing (bool)
+typing is a parameter to add typing indicator in the whatsapp while sending the message.
+this is beneficial when you want to make the message look like typed.
+example : 'typing' => true
+choices (string)
+choices is a parameter to add choices on a poll message.
+the value must consist of minimum 2 and maximum 12 item.
+the value is separated by comma.
+example : 'choices' => 'satu,dua,tiga'
+select (string)
+select is a parameter to set the poll setting to allow only one vote or multiple vote
+the value must be 'single' or 'multiple'.
+the default value is single.
+example : 'select' => 'single'
+pollname (string)
+pollname is the name of the poll to identify the poll
+example : 'pollname' => 'pollku'
+file (binary)
+note : this parameter only available on super/advanced/ultra plan.
+file is a parameter that allows you to send the file directly from your localhost/form upload.
+this parameter is super handy if you are running under private ip/localhost.
+this is the opposite of url parameter, you don't have to upload the file to public.
+example : 'file' => 'new CURLFile("localfile.png")'
+the file location must correct relative to your file, otherwise you will get error : operation aborted by callback.
+connectOnly (bool)
+connectOnly is a parameter to control the sending behaviour.
+the default is true.
+it means when the device is disconnected, the request will be denied and return status : false.
+if you set it to false, then even on disconnected device, the request is saved and will be processed when the device is connected.
+example : 'connectOnly' => false
+Data (string)
+data is a parameter to combine all request as one request.
+this is like wrapper for all available parameter on send API.
+by using regular parameter, you can already send to multiple target, add delay, etc.
+but there are some limitations like :
+   * using variable is required for dynamic message
+   * unable to send multiple attachment
+   * unable to utilize delay, harder to maintain delay by yourown
+   * etc
+using parameter data, all problem above will be solved.
+the only drawback is you can't use parameter file.
+when you use this parameter, every parameter data type must match to the requirement.
+otherwise, the request will return status : false.
+example : 'data' => '[{"target": "08123456789", "message": "1"},{"target": "08123456789", "message": "2","delay":"2"},{"target": "08123456789", "message": "3","delay":"1"]'
+please note : this is a string, not an array.
+you will need to json_encode it before sending to fonnte.
+don't be locked in single target, you can use all feature of a parameter.
+so you can also set target to multiple.
+the example will run : send message 1 immediately -> wait 2 seconds -> send message 2 -> wait 1 second ->send message 3.
+as addition, data parameter also eliminates the need for variables : 081|fonnte since you can manually insert each of them in a message parameter.
+sequence (bool)
+sequence is a parameter to control the message sending behaviour.
+by default, it's false.
+fonnte's behaviour is not respecting the order of request.
+for example : 'target' => '081xxxx,082xxxx','delay'=>'0'
+this may result 082 to be sent first instead of 081.
+this may not a big deal, but it will be when the order's matter.
+case example : you need to send several messages to a recipient, but the order must correct. you need to split the messages to several chat to shorten the length and more human writting.
+   * image
+   * image
+   * video
+   * hello anissa! how are you?
+   * we are delighted to announce the xxxxx
+   * would you like to come in?
+   * we are giving away some xxxx
+   * if you are coming, please let us know at https....
+these messages must set in correct order.
+it was not possible previously using fonnte.
+with sequence, it's now possible!
+example : 'sequence' => true
+sequence work both on regular ways or using data parameter.
+note : sequence prevent any future action (delay, schedule, followup) and the message will be sent without delay.
+preview (bool)
+by default, fonnte parse any link in the message and open it to get preview data.
+example : test dari postman https://fonnte.com will produce message as shown in image below.
+ Screenshot 167 
+
+but sometime it's not desired and in some occasion, the link is confirmation link that should be open only by the receiver of the message.
+you can now disable it and just send the message without fonnte parsing it just by using preview => false.
+inboxid (int)
+when you want to reply incoming message using webhook, you need to pass inboxid in the API parameters.
+so fonnte wil automatically generate reply based on inboxid.
+you can get the inboxid via webhook and you need to activate inbox on device->edit in order to make the inboxid work.
+beware, fonnte now saving your incoming message for 3 days in order to be used as reply via API
+duration (int)
+by default, fonnte are using typing to mimic human behaviour for 1 second.
+but some user might need flexibility for the typing duration.
+now we add it so you can determine how long the duration of the typing indicator.
+Response
+successfull run response example
+{
+    "detail": "success! message in queue",
+    "id": [
+        "80367170"
+    ],
+    "process": "pending",
+    "requestid": 2937124,
+    "status": true,
+    "target": [
+        "6282227097005"
+    ]
+}
+There are 3 detail on successfull run API
+   1. Success! message in queue : will be processed immediately
+   2. Success! message will be sent on scheduled time : will be processed on scheduled time
+   3. Success! message pending due to server issue, will be sent later : there is something wrong with the server, but your message will be sent shortly after the server run again.
+On 3rd detail, it may happen if server is restarting, server is not responding, server is down, trouble on the network and so on.
+It's not your fault, but ours.
+Again, your message is saved and will be sent shortly after the server run again.
+Failed run response always return status : false
+- Invalid token : if the token is invalid
+{
+    "Status": false,
+    "reason": "token invalid",
+    "requestid": 2937124
+}
+- Devices must belong to an account : you cannot list token under different account
+{
+    "Status": false,
+    "reason": "devices must belong to an account",
+    "requestid": 2937124
+}
+- Input invalid : if any of the value is invalid
+{
+    "reason": "input invalid",
+    "status": false,
+    "requestid": 2937124
+}
+- Url invalid : if url provided invalid
+{
+    "reason": "url invalid",
+    "status": false,
+    "requestid": 2937124
+}
+- Url unreachable : if url not responding
+{
+    "reason": "url unreachable",
+    "status": false,
+    "requestid": 2937124
+}
+- File format not supported : use supported format
+{
+    "reason": "file format not supported",
+    "status": false,
+    "requestid": 2937124
+}
+- File size must under 4MB : file cannot exceed 4MB
+{
+    "reason": "file size must under 4MB",
+    "status": false,
+    "requestid": 2937124
+}
+- Target invalid : target is not a valid number
+{
+    "reason": "target invalid",
+    "status": false,
+    "requestid": 2937124
+}
+- JSON format invalid : invalid JSON format, check your json format
+{
+    "reason": "JSON format invalid",
+    "status": false,
+    "requestid": 2937124
+}
+- Insufficient quota : requested message count > remaining quota. The message(s) will not be saved
+{
+    "reason": "insufficient quota",
+    "status": false,
+    "requestid": 2937124
+}

@@ -239,7 +239,7 @@ export default function HotspotPage() {
       {/* Generate Modal */}
       {showGenerate && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowGenerate(false)}>
-          <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
+          <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-bold text-white">Generate Voucher</h2>
               <button onClick={() => setShowGenerate(false)} className="text-gray-400 hover:text-white"><X size={20} /></button>
@@ -277,7 +277,7 @@ export default function HotspotPage() {
       {/* Profile Form Modal */}
       {showProfileForm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowProfileForm(false)}>
-          <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
+          <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-bold text-white">Tambah Profil Hotspot</h2>
               <button onClick={() => setShowProfileForm(false)} className="text-gray-400 hover:text-white"><X size={20} /></button>

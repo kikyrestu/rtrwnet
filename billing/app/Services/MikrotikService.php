@@ -142,4 +142,177 @@ class MikrotikService
 
         return $successCount > 0;
     }
+
+    /**
+     * Isolate a customer by disabling their PPPoE secret and kicking active session
+     * 
+     * @param Customer $customer
+     * @return bool
+     */
+    public function isolateCustomer(Customer $customer): bool
+    {
+        if (!$customer->router) {
+            \Log::error("Isolate failed: Customer {$customer->name} has no router assigned.");
+            return false;
+        }
+
+        $api = $this->getConnectedApi($customer->router);
+        if (!$api) {
+            \Log::error("Isolate failed: Could not connect to router {$customer->router->host}");
+            return false;
+        }
+
+        try {
+            // 1. Disable PPPoE Secret
+            $secrets = $api->comm('/ppp/secret/print', ['?name' => $customer->mikrotik_username]);
+            if (isset($secrets[0])) {
+                $api->comm('/ppp/secret/set', [
+                    '.id' => $secrets[0]['.id'],
+                    'disabled' => 'yes'
+                ]);
+            } else {
+                \Log::warning("Isolate: Secret {$customer->mikrotik_username} not found on router.");
+            }
+
+            // 2. Kick Active Session (agar langsung mati)
+            $active = $api->comm('/ppp/active/print', ['?name' => $customer->mikrotik_username]);
+            if (isset($active[0])) {
+                $api->comm('/ppp/active/remove', [
+                    '.id' => $active[0]['.id']
+                ]);
+            }
+
+            $api->disconnect();
+            return true;
+        } catch (\Exception $e) {
+            \Log::error("Error isolating customer on Mikrotik: {$e->getMessage()}");
+            return false;
+        }
+    }
+
+    /**
+     * Un-Isolate a customer by enabling their PPPoE secret
+     */
+    public function unisolateCustomer(Customer $customer): bool
+    {
+        if (!$customer->router) return false;
+
+        $api = $this->getConnectedApi($customer->router);
+        if (!$api) return false;
+
+        try {
+            $secrets = $api->comm('/ppp/secret/print', ['?name' => $customer->mikrotik_username]);
+            if (isset($secrets[0])) {
+                $api->comm('/ppp/secret/set', [
+                    '.id' => $secrets[0]['.id'],
+                    'disabled' => 'no'
+                ]);
+            }
+            $api->disconnect();
+            return true;
+        } catch (\Exception $e) {
+            \Log::error("Error unisolating customer: {$e->getMessage()}");
+            return false;
+        }
+    }
+
+    /**
+     * Add Hotspot User Profile to router
+     */
+    public function syncHotspotProfile(Router $router, \App\Models\HotspotProfile $profile): bool
+    {
+        $api = $this->getConnectedApi($router);
+        if (!$api) return false;
+
+        try {
+            $existing = $api->comm('/ip/hotspot/user/profile/print', ['?name' => $profile->name]);
+            if (isset($existing[0])) {
+                // Update
+                $api->comm('/ip/hotspot/user/profile/set', [
+                    '.id' => $existing[0]['.id'],
+                    'rate-limit' => $profile->rate_limit,
+                    'shared-users' => $profile->shared_users
+                ]);
+            } else {
+                // Add
+                $api->comm('/ip/hotspot/user/profile/add', [
+                    'name' => $profile->name,
+                    'rate-limit' => $profile->rate_limit,
+                    'shared-users' => $profile->shared_users
+                ]);
+            }
+            $api->disconnect();
+            return true;
+        } catch (\Exception $e) {
+            \Log::error("Error syncing hotspot profile: {$e->getMessage()}");
+            return false;
+        }
+    }
+
+    /**
+     * Generate / Add Hotspot Users (Vouchers) to router
+     */
+    public function syncHotspotUsers(Router $router, array $vouchers, string $profileName): bool
+    {
+        $api = $this->getConnectedApi($router);
+        if (!$api) return false;
+
+        try {
+            foreach ($vouchers as $v) {
+                $api->comm('/ip/hotspot/user/add', [
+                    'name' => $v['username'],
+                    'password' => $v['password'],
+                    'profile' => $profileName,
+                    'server' => 'all'
+                ]);
+            }
+            $api->disconnect();
+            return true;
+        } catch (\Exception $e) {
+            \Log::error("Error syncing hotspot users: {$e->getMessage()}");
+            return false;
+        }
+    }
+
+    /**
+     * Remove Hotspot User (Voucher) from router
+     */
+    public function removeHotspotUser(Router $router, string $username): bool
+    {
+        $api = $this->getConnectedApi($router);
+        if (!$api) return false;
+
+        try {
+            $users = $api->comm('/ip/hotspot/user/print', ['?name' => $username]);
+            if (isset($users[0])) {
+                $api->comm('/ip/hotspot/user/remove', ['.id' => $users[0]['.id']]);
+            }
+            $api->disconnect();
+            return true;
+        } catch (\Exception $e) {
+            \Log::error("Error removing hotspot user: {$e->getMessage()}");
+            return false;
+        }
+    }
+
+    /**
+     * Remove Hotspot Profile from router
+     */
+    public function removeHotspotProfile(Router $router, string $profileName): bool
+    {
+        $api = $this->getConnectedApi($router);
+        if (!$api) return false;
+
+        try {
+            $profiles = $api->comm('/ip/hotspot/user/profile/print', ['?name' => $profileName]);
+            if (isset($profiles[0])) {
+                $api->comm('/ip/hotspot/user/profile/remove', ['.id' => $profiles[0]['.id']]);
+            }
+            $api->disconnect();
+            return true;
+        } catch (\Exception $e) {
+            \Log::error("Error removing hotspot profile: {$e->getMessage()}");
+            return false;
+        }
+    }
 }

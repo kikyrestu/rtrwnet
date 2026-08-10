@@ -46,14 +46,33 @@ class PaymentGatewayController extends Controller
 
     public function getTransactions()
     {
-        // For now, return empty array since we don't have real payments table connected yet
+        $transactions = Payment::with('invoice.customer')->latest()->take(50)->get();
+        
+        $totalMonth = Payment::whereMonth('verified_at', now()->month)
+                             ->whereYear('verified_at', now()->year)
+                             ->count();
+                             
+        $totalAmount = Payment::whereMonth('verified_at', now()->month)
+                              ->whereYear('verified_at', now()->year)
+                              ->sum('amount_paid');
+
         return response()->json([
-            'transactions' => [],
+            'transactions' => $transactions->map(function($p) {
+                return [
+                    'id' => $p->id,
+                    'reference' => 'INV-' . $p->invoice_id,
+                    'customer' => $p->invoice && $p->invoice->customer ? $p->invoice->customer->name : 'Unknown',
+                    'amount' => $p->amount_paid,
+                    'method' => $p->payment_method,
+                    'date' => $p->verified_at ? $p->verified_at->format('Y-m-d H:i') : null,
+                    'status' => 'success'
+                ];
+            }),
             'stats' => [
-                'total_month' => 0,
-                'total_amount' => 0,
-                'success' => 0,
-                'pending' => 0,
+                'total_month' => $totalMonth,
+                'total_amount' => $totalAmount,
+                'success' => $totalMonth,
+                'pending' => 0, // Since we only save verified payments for now
             ]
         ]);
     }

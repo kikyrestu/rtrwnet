@@ -60,10 +60,15 @@ class DashboardController extends Controller
                 ];
             });
 
-        $notifications = [
-            [ 'type' => 'alert', 'msg' => 'Server Load Normal', 'time' => '10m ago' ],
-            [ 'type' => 'user', 'msg' => 'Auto-isolir berhasil dijalankan', 'time' => '1h ago' ],
-        ];
+        $recentLogs = \App\Models\AuditLog::orderBy('created_at', 'desc')->take(5)->get();
+        $notifications = $recentLogs->map(function ($log) {
+            $type = (strtolower($log->module) === 'system' || strtolower($log->action) === 'error') ? 'alert' : 'user';
+            return [
+                'type' => $type,
+                'msg' => $log->description,
+                'time' => $log->created_at->diffForHumans()
+            ];
+        });
 
         return response()->json([
             'total_customers' => $totalCustomers,

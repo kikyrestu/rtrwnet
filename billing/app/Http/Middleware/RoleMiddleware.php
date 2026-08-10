@@ -17,11 +17,11 @@ class RoleMiddleware
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         if (!Auth::check()) {
-            return redirect('login');
+            return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
         if (!in_array(Auth::user()->role, $roles)) {
-            abort(403, 'Akses Ditolak. Role anda ('.Auth::user()->role.') tidak sesuai.');
+            return response()->json(['message' => 'Akses Ditolak. Role anda ('.Auth::user()->role.') tidak diizinkan.'], 403);
         }
 
         return $next($request);

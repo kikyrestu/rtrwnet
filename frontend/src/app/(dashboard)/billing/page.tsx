@@ -63,13 +63,12 @@ export default function BillingPage() {
   };
 
   const handleExport = () => {
-    const params = new URLSearchParams();
-    if (statusFilter !== 'all') params.set('status', statusFilter);
-    window.open(`http://127.0.0.1:8000/api/export/invoices?${params}`, '_blank');
+    const params = new URLSearchParams({ search, status: statusFilter });
+    window.open(`/api/export/invoices?${params}`, '_blank');
   };
 
   const handlePrintPdf = (id: number) => {
-    window.open(`http://127.0.0.1:8000/api/invoices/${id}/pdf-preview`, '_blank');
+    window.open(`/api/invoices/${id}/pdf-preview`, '_blank');
   };
 
   const totalUnpaid = invoices.filter(i => i.status === 'unpaid').reduce((s, i) => s + i.amount, 0);

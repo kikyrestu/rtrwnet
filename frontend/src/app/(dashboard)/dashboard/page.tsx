@@ -41,6 +41,27 @@ const StatCard = ({ title, value, icon: Icon, trend, color }: any) => (
 import { useRouter } from 'next/navigation';
 import Swal from '@/lib/swal';
 
+const formatYAxis = (tickItem: number) => {
+    if (tickItem === 0) return '0';
+    if (tickItem >= 1000000) return `Rp ${(tickItem / 1000000).toFixed(1)}M`;
+    if (tickItem >= 1000) return `Rp ${(tickItem / 1000).toFixed(0)}K`;
+    return `Rp ${tickItem}`;
+};
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-slate-900/90 backdrop-blur-md border border-blue-500/30 p-3 rounded-xl shadow-xl shadow-blue-500/10">
+        <p className="text-gray-400 text-xs mb-1 font-medium">{label}</p>
+        <p className="text-white font-bold text-lg">
+          {formatRupiah(Number(payload[0].value))}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function DashboardPage() {
     const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -154,28 +175,49 @@ export default function DashboardPage() {
 
         {/* Middle Section: Chart & Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-          <div className="lg:col-span-2 bg-slate-900/50 backdrop-blur-md border border-white/10 p-6 rounded-3xl">
+          <div className="lg:col-span-2 bg-slate-900/50 backdrop-blur-md border border-white/10 p-6 rounded-3xl flex flex-col">
             <div className="flex justify-between items-center mb-6">
               <h3 className="font-bold text-lg text-white">Statistik Revenue</h3>
             </div>
-            <div className="h-64">
+            <div className="flex-1 w-full min-h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data.revenue_chart}>
+                <AreaChart data={data.revenue_chart} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
                       <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
-                  <XAxis dataKey="name" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis hide />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
-                    itemStyle={{ color: '#3b82f6' }}
-                    formatter={(val: any) => formatRupiah(Number(val))}
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
+                  <XAxis 
+                    dataKey="name" 
+                    stroke="#64748b" 
+                    fontSize={12} 
+                    tickLine={false} 
+                    axisLine={false} 
+                    tickMargin={10} 
                   />
-                  <Area type="monotone" dataKey="amount" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorAmount)" />
+                  <YAxis 
+                    stroke="#64748b" 
+                    fontSize={11} 
+                    tickLine={false} 
+                    axisLine={false} 
+                    tickFormatter={formatYAxis}
+                    width={80}
+                  />
+                  <Tooltip 
+                    content={<CustomTooltip />} 
+                    cursor={{ stroke: '#3b82f6', strokeWidth: 1, strokeDasharray: '4 4' }} 
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="amount" 
+                    stroke="#3b82f6" 
+                    strokeWidth={3} 
+                    fillOpacity={1} 
+                    fill="url(#colorAmount)"
+                    activeDot={{ r: 6, fill: "#3b82f6", stroke: "#fff", strokeWidth: 2, className: "animate-pulse" }}
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             </div>

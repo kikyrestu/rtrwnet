@@ -10,6 +10,7 @@ export interface FeatureFlag {
   is_enabled: boolean;
   icon: string;
   category: string;
+  config?: any;
 }
 
 export function useFeatureFlags() {
@@ -18,7 +19,9 @@ export function useFeatureFlags() {
 
   const fetchFeatures = useCallback(async () => {
     try {
-      const res = await fetch('/api/features');
+      const res = await fetch('/api/features', {
+        headers: { Accept: 'application/json' },
+      });
       if (res.ok) {
         const data = await res.json();
         setFeatures(data);
@@ -63,5 +66,27 @@ export function useFeatureFlags() {
     []
   );
 
-  return { features, loading, isEnabled, toggle, refetch: fetchFeatures };
+  const updateConfig = useCallback(
+    async (key: string, config: any) => {
+      try {
+        const res = await fetch(`/api/features/${key}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ config }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setFeatures((prev) =>
+            prev.map((f) => (f.key === key ? { ...f, config: data.feature.config } : f))
+          );
+        }
+        return res.ok;
+      } catch {
+        return false;
+      }
+    },
+    []
+  );
+
+  return { features, loading, isEnabled, toggle, updateConfig, refetch: fetchFeatures };
 }

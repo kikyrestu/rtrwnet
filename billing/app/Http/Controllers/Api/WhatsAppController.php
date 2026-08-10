@@ -11,6 +11,24 @@ use App\Services\WhatsAppService;
 
 class WhatsAppController extends Controller
 {
+    // ==================== CONFIG ====================
+
+    public function getConfig()
+    {
+        $config = \App\Models\ModuleConfig::getForModule('whatsapp', [
+            'provider' => 'log',
+            'fonnte_token' => '',
+            'ruangwa_token' => ''
+        ]);
+        return response()->json($config);
+    }
+
+    public function updateConfig(Request $request)
+    {
+        \App\Models\ModuleConfig::updateForModule('whatsapp', $request->all());
+        return response()->json(['message' => 'Konfigurasi WA berhasil disimpan']);
+    }
+
     // ==================== TEMPLATES ====================
 
     public function templateIndex()
@@ -50,13 +68,17 @@ class WhatsAppController extends Controller
             'template_id' => 'required|exists:wa_templates,id',
             'customer_ids' => 'required|array|min:1',
             'customer_ids.*' => 'exists:customers,id',
+            'delay' => 'nullable|string',
+            'schedule' => 'nullable|date',
         ]);
 
         $template = WaTemplate::findOrFail($request->template_id);
         $customers = Customer::whereIn('id', $request->customer_ids)->whereNotNull('phone')->get();
 
-        $sent = 0;
-        $failed = 0;
+        $messagesData = [];
+        $logs = [];
+
+        $scheduleUnix = $request->schedule ? strtotime($request->schedule) : null;
 
         foreach ($customers as $customer) {
             $message = $this->parsePlaceholders($template->body, $customer);
@@ -67,29 +89,102 @@ class WhatsAppController extends Controller
                 'phone' => $customer->phone,
                 'message' => $message,
                 'status' => 'pending',
+                'schedule_time' => $request->schedule,
             ]);
 
-            try {
-                $success = WhatsAppService::send($customer->phone, $message);
-                $log->update([
-                    'status' => $success ? 'sent' : 'failed',
-                    'sent_at' => $success ? now() : null,
-                    'error_message' => $success ? null : 'Gagal mengirim pesan',
+            $logs[] = $log;
+
+            $msgData = [
+                'target' => $customer->phone,
+                'message' => $message,
+            ];
+            if ($scheduleUnix) {
+                $msgData['schedule'] = $scheduleUnix;
+            }
+            $messagesData[] = $msgData;
+        }
+
+        try {
+            $delay = $request->delay ?: '2-5';
+            $response = WhatsAppService::sendBatch($messagesData, $delay);
+
+            if (isset($response['status']) && $response['status'] === true && isset($response['id'])) {
+                foreach ($logs as $index => $log) {
+                    $log->update([
+                        'status' => $scheduleUnix ? 'pending' : 'sent',
+                        'sent_at' => $scheduleUnix ? null : now(),
+                        'fonnte_message_id' => $response['id'][$index] ?? null,
+                    ]);
+                }
+                return response()->json([
+                    'message' => "Broadcast berhasil diantrekan/dikirim.",
+                    'sent' => count($logs),
+                    'failed' => 0,
+                    'fonnte_response' => $response
                 ]);
-                $success ? $sent++ : $failed++;
-            } catch (\Exception $e) {
-                $log->update([
-                    'status' => 'failed',
-                    'error_message' => $e->getMessage(),
-                ]);
-                $failed++;
+            } else {
+                foreach ($logs as $log) {
+                    $log->update([
+                        'status' => 'failed',
+                        'error_message' => $response['reason'] ?? 'Gagal dari API Provider'
+                    ]);
+                }
+                return response()->json([
+                    'message' => "Gagal mengirim broadcast.",
+                    'sent' => 0,
+                    'failed' => count($logs),
+                    'fonnte_response' => $response
+                ], 400);
+            }
+        } catch (\Exception $e) {
+            foreach ($logs as $log) {
+                $log->update(['status' => 'failed', 'error_message' => $e->getMessage()]);
+            }
+            return response()->json([
+                'message' => "Terjadi kesalahan sistem.",
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function reschedule(Request $request)
+    {
+        $request->validate([
+            'log_ids' => 'required|array|min:1',
+            'log_ids.*' => 'exists:wa_broadcast_logs,id',
+            'new_schedule' => 'required|date',
+            'delay' => 'nullable|string'
+        ]);
+
+        $logs = WaBroadcastLog::whereIn('id', $request->log_ids)
+            ->whereNotNull('fonnte_message_id')
+            ->where('status', 'pending')
+            ->get();
+
+        if ($logs->isEmpty()) {
+            return response()->json(['message' => 'Tidak ada pesan tertunda dengan Fonnte ID yang valid.'], 400);
+        }
+
+        $newScheduleUnix = strtotime($request->new_schedule);
+        $successCount = 0;
+        $failedCount = 0;
+        $delay = $request->delay;
+
+        foreach ($logs as $log) {
+            $response = WhatsAppService::reschedule((int)$log->fonnte_message_id, $newScheduleUnix, $delay);
+
+            if (isset($response['status']) && $response['status'] === true) {
+                $log->update(['schedule_time' => $request->new_schedule]);
+                $successCount++;
+            } else {
+                $failedCount++;
             }
         }
 
         return response()->json([
-            'message' => "Broadcast selesai. $sent terkirim, $failed gagal.",
-            'sent' => $sent,
-            'failed' => $failed,
+            'message' => "Proses reschedule selesai.",
+            'success' => $successCount,
+            'failed' => $failedCount
         ]);
     }
 

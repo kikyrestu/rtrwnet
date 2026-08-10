@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
   MessageCircle, Plus, Send, Loader2, Trash2, X, Clock,
-  CheckCircle2, XCircle, Users, FileText, Zap, Edit3
+  CheckCircle2, XCircle, Users, FileText, Zap, Edit3, Settings, Save
 } from 'lucide-react';
 
 interface Template {
@@ -49,7 +49,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
 };
 
 export default function WhatsAppPage() {
-  const [tab, setTab] = useState<'templates' | 'broadcast' | 'logs'>('templates');
+  const [tab, setTab] = useState<'templates' | 'broadcast' | 'logs' | 'settings'>('templates');
   const [templates, setTemplates] = useState<Template[]>([]);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [customers, setCustomers] = useState<any[]>([]);
@@ -63,27 +63,45 @@ export default function WhatsAppPage() {
   const [saving, setSaving] = useState(false);
 
   const [templateForm, setTemplateForm] = useState({ name: '', type: 'custom', body: '' });
-  const [broadcastForm, setBroadcastForm] = useState({ template_id: '', customer_ids: [] as string[] });
+  const [broadcastForm, setBroadcastForm] = useState({ template_id: '', customer_ids: [] as string[], delay: '2-5', schedule: '' });
   const [selectAll, setSelectAll] = useState(false);
+  const [configForm, setConfigForm] = useState({ provider: 'log', fonnte_token: '', ruangwa_token: '' });
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [tRes, lRes, sRes, cRes] = await Promise.all([
+      const [tRes, lRes, sRes, cRes, confRes] = await Promise.all([
         fetch('/api/whatsapp/templates'),
         fetch('/api/whatsapp/logs'),
         fetch('/api/whatsapp/summary'),
         fetch('/api/customers'),
+        fetch('/api/whatsapp/config')
       ]);
       if (tRes.ok) setTemplates(await tRes.json());
       if (lRes.ok) setLogs(await lRes.json());
       if (sRes.ok) setSummary(await sRes.json());
       if (cRes.ok) setCustomers(await cRes.json());
+      if (confRes.ok) setConfigForm(await confRes.json());
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
   }, []);
 
   useEffect(() => { fetchData(); }, [fetchData]);
+
+  const handleSaveConfig = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const res = await fetch('/api/whatsapp/config', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(configForm),
+      });
+      if (res.ok) {
+        alert('Konfigurasi berhasil disimpan');
+      }
+    } finally { setSaving(false); }
+  };
 
   const handleTemplateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -157,6 +175,26 @@ export default function WhatsAppPage() {
     }));
   };
 
+  const handleReschedule = async (logId: number) => {
+    const newSchedule = prompt('Masukkan jadwal baru (YYYY-MM-DD HH:mm:ss):', new Date().toISOString().slice(0, 19).replace('T', ' '));
+    if (!newSchedule) return;
+    
+    setLoading(true);
+    try {
+      const res = await fetch('/api/whatsapp/broadcast/reschedule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ log_ids: [logId], new_schedule: newSchedule })
+      });
+      const data = await res.json();
+      alert(data.message);
+      fetchData();
+    } catch (e) {
+      console.error(e);
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -205,6 +243,7 @@ export default function WhatsAppPage() {
           { key: 'templates', label: 'Template', icon: FileText },
           { key: 'broadcast', label: 'Kirim Broadcast', icon: Send },
           { key: 'logs', label: 'Riwayat Kirim', icon: Clock },
+          { key: 'settings', label: 'Pengaturan API', icon: Settings },
         ].map(t => (
           <button key={t.key} onClick={() => setTab(t.key as any)}
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1.5 ${
@@ -260,6 +299,19 @@ export default function WhatsAppPage() {
               </select>
             </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">Jeda Pengiriman / Delay (Detik)</label>
+                <input type="text" value={broadcastForm.delay} onChange={e => setBroadcastForm({ ...broadcastForm, delay: e.target.value })} placeholder="Contoh: 2-5" className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500/50" />
+                <p className="text-[10px] text-gray-500 mt-1">Gunakan format "minimal-maksimal" (contoh: 2-5) agar terhindar dari blokir WhatsApp.</p>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">Jadwal Pengiriman (Opsional)</label>
+                <input type="datetime-local" value={broadcastForm.schedule} onChange={e => setBroadcastForm({ ...broadcastForm, schedule: e.target.value })} className="w-full bg-white/5 border border-white/10 text-gray-400 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500/50" />
+                <p className="text-[10px] text-gray-500 mt-1">Kosongkan jika ingin langsung dikirim (Instan).</p>
+              </div>
+            </div>
+
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label className="text-sm text-gray-400">Pilih Pelanggan ({broadcastForm.customer_ids.length} dipilih)</label>
@@ -307,9 +359,14 @@ export default function WhatsAppPage() {
                   <div key={log.id} className="flex items-center gap-4 p-4 hover:bg-white/[0.02]">
                     <StatusIcon size={18} className={sc.color} />
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-white font-medium">{log.customer?.name || log.phone}</span>
-                        <span className={`text-[10px] font-bold ${sc.color}`}>{sc.label}</span>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-white font-medium">{log.customer?.name || log.phone}</span>
+                          <span className={`text-[10px] font-bold ${sc.color}`}>{sc.label}</span>
+                        </div>
+                        {log.status === 'pending' && (
+                          <button onClick={() => handleReschedule(log.id)} className="text-xs text-blue-400 hover:text-blue-300">Reschedule</button>
+                        )}
                       </div>
                       <p className="text-xs text-gray-500 truncate mt-0.5">{log.message}</p>
                       {log.error_message && <p className="text-xs text-red-400 mt-0.5">{log.error_message}</p>}
@@ -317,6 +374,7 @@ export default function WhatsAppPage() {
                     <div className="text-right flex-shrink-0">
                       <p className="text-xs text-gray-500">{new Date(log.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</p>
                       <p className="text-[10px] text-gray-600">{new Date(log.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</p>
+                      {log.sent_at && <p className="text-[9px] text-emerald-500/70 mt-1">Sent: {new Date(log.sent_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</p>}
                     </div>
                   </div>
                 );
@@ -326,10 +384,48 @@ export default function WhatsAppPage() {
         </div>
       )}
 
+      {/* Settings Tab */}
+      {tab === 'settings' && (
+        <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6 max-w-2xl">
+          <form onSubmit={handleSaveConfig} className="space-y-5">
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Provider WhatsApp</label>
+              <select value={configForm.provider} onChange={e => setConfigForm({ ...configForm, provider: e.target.value })}
+                className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500/50">
+                <option value="log">Log Only (Testing)</option>
+                <option value="fonnte">Fonnte</option>
+                <option value="ruangwa">RuangWA</option>
+              </select>
+            </div>
+            
+            {configForm.provider === 'fonnte' && (
+              <div className="animate-in fade-in slide-in-from-top-2">
+                <label className="block text-sm text-gray-400 mb-1">Token Fonnte</label>
+                <input type="text" value={configForm.fonnte_token} onChange={e => setConfigForm({ ...configForm, fonnte_token: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500/50 font-mono" placeholder="Masukkan token API Fonnte" />
+              </div>
+            )}
+
+            {configForm.provider === 'ruangwa' && (
+              <div className="animate-in fade-in slide-in-from-top-2">
+                <label className="block text-sm text-gray-400 mb-1">Token RuangWA</label>
+                <input type="text" value={configForm.ruangwa_token} onChange={e => setConfigForm({ ...configForm, ruangwa_token: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500/50 font-mono" placeholder="Masukkan token API RuangWA" />
+              </div>
+            )}
+
+            <button type="submit" disabled={saving}
+              className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 transition-all">
+              {saving ? <><Loader2 size={16} className="animate-spin" /> Menyimpan...</> : <><Save size={16} /> Simpan Pengaturan</>}
+            </button>
+          </form>
+        </div>
+      )}
+
       {/* Template Form Modal */}
       {showTemplateForm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowTemplateForm(false)}>
-          <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-lg" onClick={e => e.stopPropagation()}>
+          <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-bold text-white">{editingId ? 'Edit Template' : 'Template Baru'}</h2>
               <button onClick={() => setShowTemplateForm(false)} className="text-gray-400 hover:text-white"><X size={20} /></button>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import MainLayout from '@/components/layout/MainLayout';
 
 export default function DashboardAppLayout({
@@ -10,16 +10,52 @@ export default function DashboardAppLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [authed, setAuthed] = useState(false);
 
   useEffect(() => {
-    const user = localStorage.getItem('user');
-    if (!user) {
-      router.replace('/login');
-    } else {
+    try {
+      const stored = localStorage.getItem('user');
+      if (!stored) {
+        router.replace('/login');
+        return;
+      }
+      
+      const user = JSON.parse(stored);
+      const role = user.role || 'admin';
+      
+      // Client-side Role Guard
+      const adminOnlyPaths = ['/settings', '/whatsapp', '/auto-suspend', '/payment-gateway', '/client-portal'];
+      if (adminOnlyPaths.some(p => pathname.startsWith(p)) && role !== 'admin') {
+        router.replace('/dashboard');
+        return;
+      }
+      
+      if (pathname.startsWith('/network') && !['admin', 'technician'].includes(role)) {
+        router.replace('/dashboard');
+        return;
+      }
+      
+      if (pathname.startsWith('/inventory') && !['admin', 'technician'].includes(role)) {
+        router.replace('/dashboard');
+        return;
+      }
+      
+      if (pathname.startsWith('/billing') && !['admin', 'collector'].includes(role)) {
+        router.replace('/dashboard');
+        return;
+      }
+
+      if (pathname.startsWith('/customers') && !['admin', 'technician', 'sales'].includes(role)) {
+        router.replace('/dashboard');
+        return;
+      }
+
       setAuthed(true);
+    } catch (e) {
+      router.replace('/login');
     }
-  }, [router]);
+  }, [router, pathname]);
 
   if (!authed) {
     return (

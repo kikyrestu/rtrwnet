@@ -1,0 +1,35 @@
+﻿This API is used to reschedule message that have been wrongly scheduled.
+<?php
+
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+CURLOPT_URL => 'https://api.fonnte.com/reset-message',
+CURLOPT_RETURNTRANSFER => true,
+CURLOPT_ENCODING => '',
+CURLOPT_MAXREDIRS => 10,
+CURLOPT_TIMEOUT => 0,
+CURLOPT_FOLLOWLOCATION => true,
+CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+CURLOPT_CUSTOMREQUEST => 'POST',
+CURLOPT_POSTFIELDS => array(
+'id' => 1, //message id
+'delay' => '5-10', //optional
+'schedule' => 1758606641, //unix timestamp
+'byschedule' => false, //optional
+),
+CURLOPT_HTTPHEADER => array(
+'Authorization: TOKEN'
+),
+));
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+echo $response;
+TOKEN must be filled by your own token. See how to get token.
+Available parameter :
+* id (int) : message id. required
+* delay (string) : leave empty if you don't want to change delay. example : "5-10". optional
+* schedule (int) : leave empty if you don't want to change schedule. example : 1758606641. optional
+* byschedule (bool) : affect all messages that have same schedule. default false

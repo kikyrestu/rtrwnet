@@ -18,7 +18,7 @@ class FeatureFlagController extends Controller
     }
 
     /**
-     * Toggle a feature flag ON/OFF.
+     * Toggle a feature flag ON/OFF or update its config.
      */
     public function update(Request $request, string $key)
     {
@@ -26,17 +26,32 @@ class FeatureFlagController extends Controller
         $oldState = $flag->is_enabled;
 
         $request->validate([
-            'is_enabled' => 'required|boolean',
+            'is_enabled' => 'sometimes|boolean',
+            'config' => 'sometimes|array',
         ]);
 
-        $flag->update(['is_enabled' => $request->is_enabled]);
+        $updates = [];
+        if ($request->has('is_enabled')) {
+            $updates['is_enabled'] = $request->is_enabled;
+        }
+        if ($request->has('config')) {
+            $updates['config'] = $request->config;
+        }
+
+        $flag->update($updates);
         FeatureFlag::clearCache($key);
 
-        $action = $request->is_enabled ? 'enabled' : 'disabled';
-        AuditService::log('updated', 'Settings', "Admin {$action} feature module: {$flag->name}");
+        if ($request->has('is_enabled')) {
+            $action = $request->is_enabled ? 'enabled' : 'disabled';
+            AuditService::log('updated', 'Settings', "Admin {$action} feature module: {$flag->name}");
+            $message = $flag->name . ($flag->is_enabled ? ' diaktifkan.' : ' dinonaktifkan.');
+        } else {
+            AuditService::log('updated', 'Settings', "Admin updated config for feature module: {$flag->name}");
+            $message = "Pengaturan {$flag->name} berhasil disimpan.";
+        }
 
         return response()->json([
-            'message' => $flag->name . ($flag->is_enabled ? ' diaktifkan.' : ' dinonaktifkan.'),
+            'message' => $message,
             'feature' => $flag,
         ]);
     }

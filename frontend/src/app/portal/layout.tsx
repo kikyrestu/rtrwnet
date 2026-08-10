@@ -11,8 +11,8 @@ export const metadata: Metadata = {
 
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id" className="dark">
-      <body className={`${inter.className} bg-slate-950 text-slate-50 min-h-screen relative`}>
+    <div className={`dark ${inter.className}`}>
+      <div className="bg-slate-950 text-slate-50 min-h-screen relative w-full">
         {/* Background Effects */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600/20 blur-[120px]" />
@@ -23,7 +23,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
         <main className="relative z-10">
           {children}
         </main>
-      </body>
-    </html>
+      </div>
+    </div>
   );
 }

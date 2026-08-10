@@ -14,17 +14,24 @@ class IspSetting extends Model
      */
     public static function instance(): self
     {
-        return Cache::remember('isp_settings', 3600, function () {
-            return static::first() ?? new static([
+        $attributes = Cache::remember('isp_settings_attrs', 3600, function () {
+            $setting = static::first();
+            return $setting ? $setting->getAttributes() : [
                 'company_name' => 'RT/RW Net',
                 'invoice_prefix' => 'INV',
                 'due_day' => 10,
-            ]);
+            ];
         });
+
+        $model = new static();
+        $model->setRawAttributes($attributes, true);
+        $model->exists = isset($attributes['id']);
+        return $model;
     }
 
     public static function clearCache(): void
     {
-        Cache::forget('isp_settings');
+        Cache::forget('isp_settings_attrs');
+        Cache::forget('isp_settings'); // legacy cleanup
     }
 }

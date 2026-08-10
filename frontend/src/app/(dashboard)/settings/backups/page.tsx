@@ -47,7 +47,7 @@ export default function DatabaseBackupPage() {
   };
 
   const handleDownload = (filename: string) => {
-    window.open(`http://127.0.0.1:8000/api/backups/${filename}/download`, '_blank');
+    window.open(`/api/backups/${filename}/download`, '_blank');
   };
 
   const handleDelete = async (filename: string) => {

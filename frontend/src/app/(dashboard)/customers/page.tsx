@@ -90,7 +90,7 @@ export default function CustomersPage() {
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
 
   const handleExport = () => {
-    window.open('http://127.0.0.1:8000/api/export/customers', '_blank');
+    window.open('/api/export/customers', '_blank');
   };
 
   return (

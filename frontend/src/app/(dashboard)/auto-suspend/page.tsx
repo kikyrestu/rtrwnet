@@ -29,8 +29,8 @@ export default function AutoSuspendPage() {
   const fetchData = useCallback(async () => {
     try {
       const [confRes, logsRes] = await Promise.all([
-        fetch('http://127.0.0.1:8000/api/auto-suspend/config'),
-        fetch('http://127.0.0.1:8000/api/auto-suspend/logs')
+        fetch('/api/auto-suspend/config'),
+        fetch('/api/auto-suspend/logs')
       ]);
       if (confRes.ok) setConfig(await confRes.json());
       if (logsRes.ok) {
@@ -46,7 +46,7 @@ export default function AutoSuspendPage() {
   const handleSaveConfig = async () => {
     setSaving(true);
     try {
-      await fetch('http://127.0.0.1:8000/api/auto-suspend/config', {
+      await fetch('/api/auto-suspend/config', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify(config)
@@ -57,7 +57,7 @@ export default function AutoSuspendPage() {
 
   const handleRun = async () => {
     try {
-      await fetch('http://127.0.0.1:8000/api/auto-suspend/run', { method: 'POST' });
+      await fetch('/api/auto-suspend/run', { method: 'POST' });
       fetchData();
     } catch (e) {}
   };

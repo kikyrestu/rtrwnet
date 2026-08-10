@@ -23,6 +23,12 @@ async function request<T = any>(endpoint: string, options: FetchOptions = {}): P
   });
 
   if (!res.ok) {
+    if (res.status === 401) {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
+    }
     const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.message || `API Error: ${res.status}`);
   }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useFeatureFlags, FeatureFlag } from '@/hooks/useFeatureFlags';
 import {
   ToggleRight, ShieldOff, CreditCard, MessageCircle,
@@ -21,13 +21,29 @@ const categoryLabels: Record<string, { label: string; icon: any; color: string }
 };
 
 export default function FeaturesPage() {
-  const { features, loading, toggle } = useFeatureFlags();
+  const { features, loading, toggle, updateConfig } = useFeatureFlags();
   const [togglingKey, setTogglingKey] = useState<string | null>(null);
+  const [waToken, setWaToken] = useState<string>('');
+
+  useEffect(() => {
+    const wa = features.find(f => f.key === 'whatsapp');
+    if (wa && wa.config?.token && !waToken) {
+      setWaToken(wa.config.token);
+    }
+  }, [features, waToken]);
 
   const handleToggle = async (key: string, currentState: boolean) => {
     setTogglingKey(key);
     await toggle(key, !currentState);
     setTogglingKey(null);
+  };
+
+  const handleSaveToken = async (key: string, token: string) => {
+    if (!updateConfig) return;
+    setTogglingKey('save_token_' + key);
+    await updateConfig(key, { token });
+    setTogglingKey(null);
+    alert('Pengaturan Token berhasil disimpan!');
   };
 
   // Group features by category
@@ -148,6 +164,29 @@ export default function FeaturesPage() {
                         )}
                       </button>
                     </div>
+
+                    {/* Form Pengaturan Khusus Modul */}
+                    {feature.key === 'whatsapp' && feature.is_enabled && (
+                      <div className="mt-5 pt-4 border-t border-white/10">
+                        <label className="block text-xs text-gray-400 mb-1">Fonnte API Token</label>
+                        <div className="flex gap-2">
+                          <input 
+                            type="text" 
+                            value={waToken} 
+                            onChange={e => setWaToken(e.target.value)} 
+                            placeholder="Paste token dari fonnte.com"
+                            className="flex-1 bg-white/5 border border-white/10 text-white rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500/50"
+                          />
+                          <button 
+                            onClick={() => handleSaveToken(feature.key, waToken)}
+                            disabled={togglingKey === 'save_token_' + feature.key}
+                            className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                          >
+                            {togglingKey === 'save_token_' + feature.key ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />} Simpan
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}

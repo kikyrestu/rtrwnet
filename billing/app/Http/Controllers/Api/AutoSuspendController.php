@@ -79,17 +79,10 @@ class AutoSuspendController extends Controller
         $suspendedCount = 0;
 
         foreach ($overdueCustomers as $customer) {
-            $customer->status = 'isolated';
-            $customer->save();
-
-            AutoSuspendLog::create([
-                'customer_id' => $customer->id,
-                'action' => 'suspend',
-                'reason' => 'Tagihan melewati masa tenggang (' . $gracePeriod . ' hari)',
-            ]);
+            \App\Jobs\ProcessAutoSuspend::dispatch($customer->id, $gracePeriod);
             $suspendedCount++;
         }
 
-        return response()->json(['message' => "Auto suspend selesai. $suspendedCount pelanggan diisolir."]);
+        return response()->json(['message' => "Proses auto suspend untuk $suspendedCount pelanggan sedang berjalan di latar belakang (background queue)."]);
     }
 }

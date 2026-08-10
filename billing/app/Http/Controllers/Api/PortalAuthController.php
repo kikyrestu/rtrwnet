@@ -64,4 +64,44 @@ class PortalAuthController extends Controller
             'history' => $history
         ]);
     }
+    public function packages()
+    {
+        $packages = \App\Models\Package::where('is_visible', true)
+            ->orderBy('price', 'asc')
+            ->get();
+            
+        return response()->json(['packages' => $packages]);
+    }
+
+    public function requestUpgrade(Request $request)
+    {
+        $request->validate([
+            'customer_id' => 'required',
+            'package_id' => 'required|exists:packages,id'
+        ]);
+
+        $customerId = str_replace('CUST-', '', $request->customer_id);
+        $customer = Customer::find((int)$customerId);
+        $targetPackage = \App\Models\Package::find($request->package_id);
+
+        if (!$customer || !$targetPackage) {
+            return response()->json(['message' => 'Data tidak valid'], 400);
+        }
+
+        // Create a ticket
+        $ticket = \App\Models\Ticket::create([
+            'customer_id' => $customer->id,
+            'ticket_number' => 'TKT-' . date('Ymd') . '-' . rand(1000, 9999),
+            'subject' => 'Permintaan Upgrade: ' . $targetPackage->name,
+            'description' => "Pelanggan meminta upgrade/perubahan paket ke {$targetPackage->name} (Rp " . number_format($targetPackage->price, 0, ',', '.') . ").\nMohon segera di-follow up untuk penyesuaian billing dan mikrotik.",
+            'category' => 'permintaan',
+            'priority' => 'medium',
+            'status' => 'open'
+        ]);
+
+        return response()->json([
+            'message' => 'Permintaan upgrade berhasil dikirim. Tim kami akan segera menghubungi Anda.',
+            'ticket' => $ticket
+        ]);
+    }
 }
