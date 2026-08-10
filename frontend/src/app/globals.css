@@ -89,7 +89,7 @@
 }
 
 .tap-target { min-height: 44px; min-width: 44px; }
-.has-bottom-nav { padding-bottom: 5rem; }
+.has-bottom-nav { padding-bottom: 6rem; }
 
 /* Smooth scroll */
 html { scroll-behavior: smooth; }
