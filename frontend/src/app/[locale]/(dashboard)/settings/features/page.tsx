@@ -61,6 +61,20 @@ export default function FeaturesPage() {
     );
   }
 
+  if (!features || features.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
+        <div className="p-4 rounded-full bg-white/5">
+          <ToggleRight className="text-gray-600" size={40} />
+        </div>
+        <h2 className="text-xl font-bold text-white">Belum Ada Modul</h2>
+        <p className="text-gray-500 text-center max-w-md">
+          Modul dan fitur belum tersedia. Pastikan backend API sudah berjalan dan endpoint <code className="text-blue-400/70 bg-blue-500/10 px-1.5 py-0.5 rounded text-xs">/api/features</code> mengembalikan data.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       {/* Header */}

@@ -137,7 +137,9 @@
     "paySuccess": "Paid!",
     "paySuccessText": "Invoice payment recorded successfully!",
     "payFailed": "Failed!",
-    "payFailedText": "An error occurred"
+    "payFailedText": "An error occurred",
+    "noTransactions": "No payment history yet",
+    "noTransactionsDesc": "Payment data will appear after transactions are made"
   },
   "customers": {
     "title": "Customer List",

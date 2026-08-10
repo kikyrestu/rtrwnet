@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { usePathname } from 'next/navigation';
+import { useTranslations, useLocale } from 'next-intl';
+import { useRouter } from '@/i18n/routing';
 import { useFeatureFlags } from '@/hooks/useFeatureFlags';
 import { 
   LayoutDashboard, Users, Receipt, Network, Settings,
@@ -13,7 +14,9 @@ import {
   // Settings children
   UserCircle, UserCog, ToggleRight, ClipboardList, Database,
   // Feature-flagged modules
-  ShieldOff, CreditCard, Bell, Ticket
+  ShieldOff, CreditCard, Bell, Ticket,
+  // Language
+  Languages
 } from 'lucide-react';
 
 interface NavItem {
@@ -33,6 +36,7 @@ export default function BottomNav() {
   const router = useRouter();
   const t = useTranslations('sidebar');
   const { isEnabled } = useFeatureFlags();
+  const locale = useLocale();
   const [open, setOpen] = useState(false);
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
 
@@ -117,12 +121,27 @@ export default function BottomNav() {
           : 'translate-y-8 opacity-0 pointer-events-none'
       }`}>
         <div className="bg-slate-900/98 backdrop-blur-xl border border-white/10 rounded-3xl mx-3 mb-2 shadow-2xl shadow-black/50 max-h-[70vh] flex flex-col">
-          {/* Handle */}
-          <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
-            <button 
-              onClick={() => setOpen(false)}
-              className="tap-target w-10 h-1.5 bg-white/20 rounded-full hover:bg-white/40 transition-colors"
-            />
+          {/* Header with logo */}
+          <div className="flex items-center justify-between px-4 pt-3 pb-2 flex-shrink-0 border-b border-white/5">
+            <div className="flex items-center gap-2">
+              <div className="bg-white rounded-lg p-1 flex-shrink-0">
+                <img src="/logo-buildyweb.png" alt="BuildyWeb" className="w-6 h-6 object-contain" />
+              </div>
+              <span className="text-sm font-bold text-white">Menu</span>
+            </div>
+            <button
+              onClick={() => {
+                const newLocale = locale === 'id' ? 'en' : 'id';
+                router.replace(pathname, { locale: newLocale });
+                setOpen(false);
+              }}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white border border-white/10 hover:border-white/20 transition-all text-xs font-medium"
+            >
+              <Languages size={14} />
+              <span className="text-[10px] font-bold bg-white/5 px-1.5 py-0.5 rounded border border-white/10">
+                {locale === 'id' ? 'EN' : 'ID'}
+              </span>
+            </button>
           </div>
 
           {/* Scrollable content */}

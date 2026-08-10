@@ -9,7 +9,8 @@ import {
   AlertCircle,
   MoreVertical,
   CheckCircle2,
-  Clock
+  Clock,
+  Receipt
 } from 'lucide-react';
 import { 
   XAxis, 
@@ -24,22 +25,33 @@ import { useRouter } from 'next/navigation';
 import Swal from '@/lib/swal';
 import { useTranslations } from 'next-intl';
 
-const StatCard = ({ title, value, icon: Icon, trend, color }: any) => (
-  <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-6 rounded-3xl transition-transform hover:scale-[1.02]">
-    <div className="flex justify-between items-start mb-4">
-      <div className={`p-3 rounded-2xl bg-opacity-20 ${color}`}>
-        <Icon className={color.replace('bg-', 'text-')} size={24} />
+const colorMap: Record<string, { bg: string; text: string }> = {
+  'bg-blue-500': { bg: 'bg-blue-500/20', text: 'text-blue-500' },
+  'bg-emerald-500': { bg: 'bg-emerald-500/20', text: 'text-emerald-500' },
+  'bg-red-500': { bg: 'bg-red-500/20', text: 'text-red-500' },
+  'bg-purple-500': { bg: 'bg-purple-500/20', text: 'text-purple-500' },
+  'bg-amber-500': { bg: 'bg-amber-500/20', text: 'text-amber-500' },
+};
+
+const StatCard = ({ title, value, icon: Icon, trend, color }: any) => {
+  const colors = colorMap[color] || { bg: 'bg-white/10', text: 'text-white' };
+  return (
+    <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-5 md:p-6 rounded-3xl transition-transform hover:scale-[1.02]">
+      <div className="flex justify-between items-start mb-4">
+        <div className={`p-3 rounded-2xl ${colors.bg}`}>
+          <Icon className={colors.text} size={24} />
+        </div>
+        {trend && (
+          <span className={`text-xs font-bold px-2 py-1 rounded-full ${colors.bg} ${colors.text}`}>
+            {trend}
+          </span>
+        )}
       </div>
-      {trend && (
-        <span className={`text-xs font-bold px-2 py-1 rounded-full ${color} bg-opacity-20`}>
-          {trend}
-        </span>
-      )}
+      <p className="text-gray-400 text-sm font-medium">{title}</p>
+      <h3 className="text-2xl font-bold text-white mt-1">{value}</h3>
     </div>
-    <p className="text-gray-400 text-sm font-medium">{title}</p>
-    <h3 className="text-2xl font-bold text-white mt-1">{value}</h3>
-  </div>
-);
+  );
+};
 
 const formatYAxis = (tickItem: number) => {
     if (tickItem === 0) return '0';
@@ -222,7 +234,19 @@ export default function DashboardPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {data.recent_transactions.map((user: any, idx: number) => (
+                {(!data.recent_transactions || data.recent_transactions.length === 0) ? (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-16 text-center">
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="p-4 rounded-full bg-white/5">
+                          <Receipt className="text-gray-600" size={32} />
+                        </div>
+                        <p className="text-gray-500 font-medium">{t('noTransactions')}</p>
+                        <p className="text-gray-600 text-sm">{t('noTransactionsDesc')}</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : data.recent_transactions.map((user: any, idx: number) => (
                   <tr key={idx} className="hover:bg-white/5 transition-colors group">
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-3">

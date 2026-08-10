@@ -137,7 +137,9 @@
     "paySuccess": "Lunas!",
     "paySuccessText": "Pembayaran tagihan sukses dicatat!",
     "payFailed": "Gagal!",
-    "payFailedText": "Terjadi kesalahan"
+    "payFailedText": "Terjadi kesalahan",
+    "noTransactions": "Belum ada riwayat pembayaran",
+    "noTransactionsDesc": "Data pembayaran akan muncul setelah ada transaksi"
   },
   "customers": {
     "title": "Daftar Pelanggan",
