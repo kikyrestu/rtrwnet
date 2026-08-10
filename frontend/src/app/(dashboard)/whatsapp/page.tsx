@@ -213,7 +213,7 @@ export default function WhatsAppPage() {
             className="px-4 py-2.5 bg-white/5 border border-white/10 text-gray-300 rounded-xl hover:bg-white/10 transition-all text-sm font-medium flex items-center gap-2">
             <FileText size={16} /> Template Baru
           </button>
-          <button onClick={() => { setBroadcastForm({ template_id: templates[0]?.id?.toString() || '', customer_ids: [] }); setShowBroadcastForm(true); }}
+          <button onClick={() => { setBroadcastForm({ template_id: templates[0]?.id?.toString() || '', customer_ids: [], delay: '', schedule: '' }); setShowBroadcastForm(true); }}
             className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition-all text-sm font-medium flex items-center gap-2 shadow-lg shadow-emerald-600/20">
             <Send size={16} /> Broadcast
           </button>
