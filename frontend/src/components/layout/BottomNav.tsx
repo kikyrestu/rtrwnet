@@ -19,7 +19,7 @@ export default function BottomNav() {
     { label: t('dashboard'), icon: LayoutDashboard, path: '/dashboard' },
     { label: t('customers'), icon: Users, path: '/customers' },
     { label: t('billing'), icon: Receipt, path: '/billing' },
-    { label: t('network'), icon: Network, path: '/network' },
+    { label: t('network'), icon: Network, path: '/network/map' },
   ];
 
   const moreItems = [
