@@ -1,9 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { usePathname } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { useRouter } from '@/i18n/routing';
+import { useRouter, usePathname } from '@/i18n/routing';
 import { useFeatureFlags } from '@/hooks/useFeatureFlags';
 import { 
   LayoutDashboard, Users, Receipt, Network, Settings,

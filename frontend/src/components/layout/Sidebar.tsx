@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { 
   LayoutDashboard, Users, Receipt, Settings, LogOut, 
   BarChart3, Network, Router, Radio, MapPin, RefreshCcw, MonitorCog,
@@ -13,7 +12,7 @@ import clsx from 'clsx';
 import { useState, useEffect } from 'react';
 import { useFeatureFlags } from '@/hooks/useFeatureFlags';
 import { useTranslations, useLocale } from 'next-intl';
-import { useRouter } from '@/i18n/routing';
+import { useRouter, usePathname } from '@/i18n/routing';
 
 interface MenuItem {
   name: string;
