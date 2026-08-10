@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { UserCircle, Users, Receipt, AlertTriangle, Settings2, Globe, Eye, Link2, Loader2, CheckCircle2 } from 'lucide-react';
+import { UserCircle, Users, Receipt, AlertTriangle, Settings2, Eye, Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function ClientPortalPage() {
   const [config, setConfig] = useState({
@@ -13,6 +14,7 @@ export default function ClientPortalPage() {
   });
   const [stats, setStats] = useState({ total_accounts: 0, login_today: 0, check_billing: 0, report_issue: 0 });
   const [saving, setSaving] = useState(false);
+  const t = useTranslations('clientPortal');
 
   const fetchData = async () => {
     try {
@@ -39,11 +41,11 @@ export default function ClientPortalPage() {
   };
 
   const options = [
-    { key: 'can_view_billing', label: 'Pelanggan Bisa Cek Tagihan' },
-    { key: 'can_view_history', label: 'Pelanggan Bisa Lihat History Pembayaran' },
-    { key: 'can_report_issue', label: 'Pelanggan Bisa Lapor Gangguan' },
-    { key: 'can_download_invoice', label: 'Pelanggan Bisa Download Invoice' },
-    { key: 'can_change_password', label: 'Pelanggan Bisa Ubah Password' },
+    { key: 'can_view_billing', label: t('canViewBilling') },
+    { key: 'can_view_history', label: t('canViewHistory') },
+    { key: 'can_report_issue', label: t('canReportIssue') },
+    { key: 'can_download_invoice', label: t('canDownloadInvoice') },
+    { key: 'can_change_password', label: t('canChangePassword') },
   ];
 
   return (
@@ -54,18 +56,18 @@ export default function ClientPortalPage() {
             <div className="p-2 bg-blue-600/20 rounded-xl border border-blue-500/20">
               <UserCircle className="text-blue-400" size={24} />
             </div>
-            Portal Pelanggan
+            {t('title')}
           </h1>
-          <p className="text-gray-400 mt-1 text-sm">Halaman self-service untuk pelanggan cek tagihan dan lapor gangguan</p>
+          <p className="text-gray-400 mt-1 text-sm">{t('subtitle')}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {[
-          { label: 'Total Akun', value: stats.total_accounts, color: 'text-white', icon: Users, bg: 'bg-blue-600/20' },
-          { label: 'Login Hari Ini', value: stats.login_today, color: 'text-emerald-400', icon: Eye, bg: 'bg-emerald-600/20' },
-          { label: 'Cek Tagihan', value: stats.check_billing, color: 'text-blue-400', icon: Receipt, bg: 'bg-blue-600/20' },
-          { label: 'Lapor Gangguan', value: stats.report_issue, color: 'text-red-400', icon: AlertTriangle, bg: 'bg-red-600/20' },
+          { label: t('totalAccounts'), value: stats.total_accounts, color: 'text-white', icon: Users, bg: 'bg-blue-600/20' },
+          { label: t('loginToday'), value: stats.login_today, color: 'text-emerald-400', icon: Eye, bg: 'bg-emerald-600/20' },
+          { label: t('checkBilling'), value: stats.check_billing, color: 'text-blue-400', icon: Receipt, bg: 'bg-blue-600/20' },
+          { label: t('reportIssue'), value: stats.report_issue, color: 'text-red-400', icon: AlertTriangle, bg: 'bg-red-600/20' },
         ].map(s => (
           <div key={s.label} className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-5">
             <div className="flex items-center justify-between">
@@ -78,9 +80,9 @@ export default function ClientPortalPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6 space-y-4">
-          <h2 className="text-lg font-bold text-white flex items-center gap-2"><Settings2 size={18} className="text-gray-400" /> Pengaturan Portal</h2>
+          <h2 className="text-lg font-bold text-white flex items-center gap-2"><Settings2 size={18} className="text-gray-400" /> {t('settingsTitle')}</h2>
           <div>
-            <label className="block text-sm text-gray-400 mb-1">URL Portal</label>
+            <label className="block text-sm text-gray-400 mb-1">{t('portalUrl')}</label>
             <input type="text" readOnly value="http://127.0.0.1:3000/portal" className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 text-sm outline-none" />
           </div>
           {options.map((opt) => (
@@ -94,16 +96,16 @@ export default function ClientPortalPage() {
           ))}
           <button onClick={handleSaveConfig} disabled={saving} className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 flex justify-center items-center gap-2 text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-blue-600/20">
             {saving ? <Loader2 size={16} className="animate-spin" /> : null}
-            Simpan Pengaturan
+            {t('saveSettings')}
           </button>
         </div>
 
         <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
-          <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><Eye size={18} className="text-gray-400" /> Preview</h2>
+          <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><Eye size={18} className="text-gray-400" /> {t('preview')}</h2>
           <div className="bg-gradient-to-br from-blue-900/40 to-indigo-900/40 border border-white/10 rounded-2xl p-6 text-center space-y-4">
             <div className="w-16 h-16 bg-blue-600/30 rounded-full mx-auto flex items-center justify-center"><UserCircle size={32} className="text-blue-400" /></div>
-            <h3 className="text-white font-bold text-lg">RT/RW Net Portal</h3>
-            <p className="text-gray-400 text-sm">Login dengan ID Pelanggan</p>
+            <h3 className="text-white font-bold text-lg">{t('previewTitle')}</h3>
+            <p className="text-gray-400 text-sm">{t('previewDesc')}</p>
             <div className="space-y-2 max-w-xs mx-auto">
               <input type="text" readOnly value="ID-CUST-001" className="w-full bg-white/10 border border-white/20 text-white rounded-xl p-3 text-sm text-center" />
               <input type="password" readOnly value="pass" className="w-full bg-white/10 border border-white/20 text-white rounded-xl p-3 text-sm text-center" />

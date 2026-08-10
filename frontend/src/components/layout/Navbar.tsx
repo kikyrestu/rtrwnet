@@ -4,22 +4,20 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Search, Bell, Plus } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
+  const t = useTranslations('navbar');
   
-  const segment = pathname.split('/')[1] || 'dashboard';
-  const titleMap: Record<string, string> = {
-    dashboard: 'Dashboard',
-    customers: 'Pelanggan',
-    billing: 'Tagihan',
-    reports: 'Laporan',
-    network: 'Jaringan',
-    settings: 'Pengaturan',
-  };
-  const title = titleMap[segment] || segment.charAt(0).toUpperCase() + segment.slice(1);
+  const segment = pathname.split('/')[2] || 'dashboard';
+  const titleKey = `titleMap.${segment}`;
+  let title = t(titleKey as any);
+  if (title === titleKey) {
+    title = segment.charAt(0).toUpperCase() + segment.slice(1);
+  }
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +32,7 @@ export default function Navbar() {
         <h2 className="text-3xl font-bold text-white tracking-tight">
           {title}
         </h2>
-        <p className="text-gray-400 mt-1">Halo Admin, berikut update jaringan hari ini.</p>
+        <p className="text-gray-400 mt-1">{t('greeting')}</p>
       </div>
 
       <div className="flex items-center space-x-4">
@@ -42,7 +40,7 @@ export default function Navbar() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-400 transition-colors" size={18} />
           <input 
             type="text" 
-            placeholder="Cari pelanggan..." 
+            placeholder={t('searchPlaceholder')} 
             className="bg-white/5 border border-white/10 text-white rounded-2xl py-2.5 pl-10 pr-4 outline-none focus:ring-2 focus:ring-blue-500/50 w-64 transition-all"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -55,7 +53,7 @@ export default function Navbar() {
         <Link href="/customers/create" 
           className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-2xl flex items-center space-x-2 font-semibold shadow-lg shadow-blue-600/20 transition-all active:scale-95">
           <Plus size={18} />
-          <span className="hidden sm:inline">Tambah Pelanggan</span>
+          <span className="hidden sm:inline">{t('addCustomer')}</span>
         </Link>
       </div>
     </header>

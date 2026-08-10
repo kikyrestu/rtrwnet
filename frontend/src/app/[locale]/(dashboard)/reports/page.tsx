@@ -6,6 +6,7 @@ import { BarChart3, TrendingUp, AlertCircle } from 'lucide-react';
 import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar
 } from 'recharts';
+import { useTranslations } from 'next-intl';
 
 interface ReportData {
   total_paid: number;
@@ -18,6 +19,7 @@ interface ReportData {
 export default function ReportsPage() {
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
+  const t = useTranslations('reports');
 
   useEffect(() => {
     api.get('/reports')
@@ -37,38 +39,35 @@ export default function ReportsPage() {
 
   return (
     <div className="animate-in fade-in duration-500 space-y-6">
-      {/* Header */}
       <div className="flex items-center gap-3">
         <div className="p-3 rounded-2xl bg-purple-500/10">
           <BarChart3 className="text-purple-400" size={24} />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-white">Laporan Keuangan</h1>
-          <p className="text-sm text-gray-400">Periode: {data.current_month}</p>
+          <h1 className="text-2xl font-bold text-white">{t('title')}</h1>
+          <p className="text-sm text-gray-400">{t('period')}: {data.current_month}</p>
         </div>
       </div>
 
-      {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-6 rounded-3xl">
           <div className="flex items-center gap-3 mb-3">
             <div className="p-2.5 rounded-xl bg-emerald-500/10"><TrendingUp className="text-emerald-400" size={22} /></div>
-            <span className="text-gray-400 font-medium">Total Pemasukan Bulan Ini</span>
+            <span className="text-gray-400 font-medium">{t('totalIncome')}</span>
           </div>
           <p className="text-3xl font-bold text-emerald-400">{formatRupiah(data.total_paid)}</p>
         </div>
         <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-6 rounded-3xl">
           <div className="flex items-center gap-3 mb-3">
             <div className="p-2.5 rounded-xl bg-red-500/10"><AlertCircle className="text-red-400" size={22} /></div>
-            <span className="text-gray-400 font-medium">Total Tunggakan Bulan Ini</span>
+            <span className="text-gray-400 font-medium">{t('totalArrears')}</span>
           </div>
           <p className="text-3xl font-bold text-red-400">{formatRupiah(data.total_unpaid)}</p>
         </div>
       </div>
 
-      {/* Chart */}
       <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-6 rounded-3xl">
-        <h3 className="font-bold text-lg text-white mb-6">Revenue 6 Bulan Terakhir</h3>
+        <h3 className="font-bold text-lg text-white mb-6">{t('revenueChart')}</h3>
         <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data.revenue_chart}>
@@ -92,22 +91,21 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      {/* Paid Invoices Table */}
       <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden">
         <div className="p-6 border-b border-white/5">
-          <h3 className="font-bold text-lg text-white">Transaksi Terbayar Bulan Ini</h3>
+          <h3 className="font-bold text-lg text-white">{t('paidTransactions')}</h3>
         </div>
         {data.paid_invoices.length === 0 ? (
-          <div className="p-12 text-center text-gray-500">Belum ada transaksi terbayar bulan ini.</div>
+          <div className="p-12 text-center text-gray-500">{t('noTransactions')}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-white/5 text-slate-400 text-xs uppercase tracking-wider">
-                  <th className="px-6 py-4 font-semibold">Pelanggan</th>
-                  <th className="px-6 py-4 font-semibold">Periode</th>
-                  <th className="px-6 py-4 font-semibold">Nominal</th>
-                  <th className="px-6 py-4 font-semibold">Tanggal Bayar</th>
+                  <th className="px-6 py-4 font-semibold">{t('tableHeaders.customer')}</th>
+                  <th className="px-6 py-4 font-semibold">{t('tableHeaders.period')}</th>
+                  <th className="px-6 py-4 font-semibold">{t('tableHeaders.nominal')}</th>
+                  <th className="px-6 py-4 font-semibold">{t('tableHeaders.paidDate')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">

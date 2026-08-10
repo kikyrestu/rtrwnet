@@ -10,6 +10,7 @@ import {
   Edit, Trash2, CheckCircle2, Clock, AlertCircle, Save, X, Activity, RefreshCw, Key
 } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 interface CustomerDetail {
   id: number;
@@ -50,6 +51,7 @@ export default function CustomerDetailPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
+  const t = useTranslations('customerDetail');
 
   const [customer, setCustomer] = useState<CustomerDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -112,29 +114,29 @@ export default function CustomerDetailPage() {
   }, [customer?.ont_sn]);
 
   const handleAcsReboot = async () => {
-    if (!confirm('Reboot perangkat ONT pelanggan? Jaringan akan mati selama 1-2 menit.')) return;
+    if (!confirm(t('rebootConfirm'))) return;
     try {
-      Swal.fire({ title: 'Mengirim Perintah...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      Swal.fire({ title: t('sendingCommand'), allowOutsideClick: false, didOpen: () => Swal.showLoading() });
       const res = await api.post(`/acs/device/${id}/reboot`);
-      Swal.fire({ title: 'Berhasil', text: res.message, icon: 'success' });
+      Swal.fire({ title: t('success'), text: res.message, icon: 'success' });
     } catch (err: any) {
-      Swal.fire({ text: err.message || 'Gagal reboot', icon: 'error' });
+      Swal.fire({ text: err.message || t('rebootFailed'), icon: 'error' });
     }
   };
 
   const handleAcsWifi = async () => {
     const { value: formValues } = await Swal.fire({
-      title: 'Ganti WiFi & Password',
+      title: t('wifiTitle'),
       html:
-        '<input id="swal-input1" class="swal2-input" placeholder="Nama WiFi (SSID)">' +
-        '<input id="swal-input2" class="swal2-input" placeholder="Password Baru" type="password">',
+        '<input id="swal-input1" class="swal2-input" placeholder="' + t('wifiSsid') + '">' +
+        '<input id="swal-input2" class="swal2-input" placeholder="' + t('wifiPassword') + '" type="password">',
       focusConfirm: false,
       showCancelButton: true,
       preConfirm: () => {
         const ssid = (document.getElementById('swal-input1') as HTMLInputElement).value;
         const pass = (document.getElementById('swal-input2') as HTMLInputElement).value;
         if (!ssid || pass.length < 8) {
-          Swal.showValidationMessage('SSID wajib diisi dan Password minimal 8 karakter');
+          Swal.showValidationMessage(t('wifiValidation'));
           return false;
         }
         return { ssid, password: pass };
@@ -143,11 +145,11 @@ export default function CustomerDetailPage() {
 
     if (formValues) {
       try {
-        Swal.fire({ title: 'Memproses Provisioning...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        Swal.fire({ title: t('wifiProcessing'), allowOutsideClick: false, didOpen: () => Swal.showLoading() });
         const res = await api.put(`/acs/device/${id}/wifi`, formValues);
-        Swal.fire({ title: 'Berhasil', text: res.message, icon: 'success' });
+        Swal.fire({ title: t('success'), text: res.message, icon: 'success' });
       } catch (err: any) {
-        Swal.fire({ text: err.message || 'Gagal mengubah WiFi', icon: 'error' });
+        Swal.fire({ text: err.message || t('wifiFailed'), icon: 'error' });
       }
     }
   };
@@ -174,7 +176,7 @@ export default function CustomerDetailPage() {
   };
 
   const handleDelete = async () => {
-    if (!confirm('Yakin hapus pelanggan ini? Data terkait juga akan terhapus.')) return;
+    if (!confirm(t('deleteConfirm'))) return;
     try {
       await api.delete(`/customers/${id}`);
       router.push('/customers');
@@ -182,7 +184,7 @@ export default function CustomerDetailPage() {
   };
 
   const handlePay = async (invoiceId: number) => {
-    if (!confirm('Konfirmasi pembayaran tagihan ini?')) return;
+    if (!confirm(t('payConfirm'))) return;
     try {
       await api.post(`/invoices/${invoiceId}/pay`);
       const updated = await api.get(`/customers/${id}`);
@@ -192,7 +194,7 @@ export default function CustomerDetailPage() {
 
   const statusBadge = (status: string) => {
     const map: Record<string, { cls: string; label: string }> = {
-      active: { cls: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20', label: 'Aktif' },
+      active: { cls: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20', label: t('labels.status') === 'customerDetail.labels.status' ? 'Aktif' : t('active') },
       isolated: { cls: 'bg-red-500/15 text-red-400 border-red-500/20', label: 'Isolir' },
       inactive: { cls: 'bg-gray-500/15 text-gray-400 border-gray-500/20', label: 'Nonaktif' },
     };
@@ -211,8 +213,8 @@ export default function CustomerDetailPage() {
   if (!customer) {
     return (
       <div className="text-center py-20">
-        <p className="text-gray-500 text-lg">Pelanggan tidak ditemukan.</p>
-        <Link href="/customers" className="text-blue-400 hover:underline mt-4 inline-block">← Kembali</Link>
+        <p className="text-gray-500 text-lg">{t('notFound')}</p>
+        <Link href="/customers" className="text-blue-400 hover:underline mt-4 inline-block">{t('back')}</Link>
       </div>
     );
   }
@@ -241,11 +243,11 @@ export default function CustomerDetailPage() {
         <div className="flex gap-2">
           <button onClick={() => setEditing(!editing)}
             className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 px-4 py-2 rounded-xl flex items-center gap-2 text-sm font-semibold border border-blue-500/20 transition-all">
-            <Edit size={16} />{editing ? 'Batal Edit' : 'Edit'}
+            <Edit size={16} />{editing ? t('cancelEdit') : t('edit')}
           </button>
           <button onClick={handleDelete}
             className="bg-red-600/20 hover:bg-red-600/30 text-red-400 px-4 py-2 rounded-xl flex items-center gap-2 text-sm font-semibold border border-red-500/20 transition-all">
-            <Trash2 size={16} />Hapus
+            <Trash2 size={16} />{t('delete')}
           </button>
         </div>
       </div>
@@ -253,40 +255,40 @@ export default function CustomerDetailPage() {
       {/* Info Cards or Edit Form */}
       {editing ? (
         <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-6 rounded-3xl space-y-4">
-          <h3 className="text-lg font-bold text-white mb-2">Edit Data Pelanggan</h3>
+          <h3 className="text-lg font-bold text-white mb-2">{t('editData')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Nama</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1">{t('labels.name')}</label>
               <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
                 className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500/50" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">NIK</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1">{t('labels.nik')}</label>
               <input type="text" value={form.nik} onChange={e => setForm({ ...form, nik: e.target.value })}
                 className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500/50" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">No. HP</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1">{t('labels.phone')}</label>
               <input type="text" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })}
                 className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500/50" />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-400 mb-1">Alamat</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1">{t('labels.address')}</label>
               <textarea value={form.address} onChange={e => setForm({ ...form, address: e.target.value })}
                 className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500/50" rows={2} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Username PPPoE</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1">{t('labels.pppoeUsername')}</label>
               <input type="text" value={form.mikrotik_username} onChange={e => setForm({ ...form, mikrotik_username: e.target.value })}
                 className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500/50 font-mono" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Password PPPoE</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1">{t('labels.pppoePassword')}</label>
               <input type="text" value={form.mikrotik_password} onChange={e => setForm({ ...form, mikrotik_password: e.target.value })}
                 className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500/50 font-mono" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Paket</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1">{t('labels.package')}</label>
               <select value={form.package_id} onChange={e => setForm({ ...form, package_id: e.target.value })}
                 className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none">
                 <option value="">-- Pilih --</option>
@@ -294,7 +296,7 @@ export default function CustomerDetailPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Router</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1">{t('labels.router')}</label>
               <select value={form.router_id} onChange={e => setForm({ ...form, router_id: e.target.value })}
                 className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none">
                 <option value="">-- Pilih --</option>
@@ -302,7 +304,7 @@ export default function CustomerDetailPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">ODP</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1">{t('labels.odp')}</label>
               <select value={form.dp_id} onChange={e => setForm({ ...form, dp_id: e.target.value })}
                 className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none">
                 <option value="">-- Pilih --</option>
@@ -310,12 +312,12 @@ export default function CustomerDetailPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Port ODP</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1">{t('labels.odpPort')}</label>
               <input type="number" min={1} max={32} value={form.dp_port_number} onChange={e => setForm({ ...form, dp_port_number: e.target.value })}
                 className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500/50" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Wilayah</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1">{t('labels.region')}</label>
               <select value={form.region_id} onChange={e => setForm({ ...form, region_id: e.target.value })}
                 className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none">
                 <option value="">-- Pilih --</option>
@@ -323,7 +325,7 @@ export default function CustomerDetailPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Status</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1">{t('labels.status')}</label>
               <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })}
                 className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none">
                 <option value="active">Aktif</option>
@@ -332,17 +334,17 @@ export default function CustomerDetailPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Tanggal Billing</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1">{t('labels.billingDate')}</label>
               <input type="number" min={1} max={28} value={form.billing_cycle_date} onChange={e => setForm({ ...form, billing_cycle_date: e.target.value })}
                 className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500/50" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Merk Modem / Router</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1">{t('labels.modemBrand')}</label>
               <input type="text" value={form.ont_merk} onChange={e => setForm({ ...form, ont_merk: e.target.value })}
                 className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500/50" placeholder="ZTE / Huawei / TP-Link" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Serial Number Modem</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1">{t('labels.modemSn')}</label>
               <input type="text" value={form.ont_sn} onChange={e => setForm({ ...form, ont_sn: e.target.value })}
                 className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500/50 font-mono" placeholder="SN/MAC Address" />
             </div>
@@ -362,14 +364,14 @@ export default function CustomerDetailPage() {
             </button>
             <button onClick={handleSave} disabled={saving}
               className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 font-semibold shadow-lg shadow-blue-600/20">
-              <Save size={16} />{saving ? 'Menyimpan...' : 'Simpan Perubahan'}
+              <Save size={16} />{saving ? t('saving') : t('saveChanges')}
             </button>
           </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-5 rounded-3xl space-y-3">
-            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Info Pelanggan</h3>
+            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">{t('infoCustomer')}</h3>
             <div className="space-y-2.5">
               <div className="flex items-center gap-3"><User size={16} className="text-blue-400" /><span className="text-slate-300">{customer.name}</span></div>
               <div className="flex items-center gap-3"><Phone size={16} className="text-blue-400" /><span className="text-slate-300">{customer.phone || '-'}</span></div>
@@ -377,7 +379,7 @@ export default function CustomerDetailPage() {
             </div>
           </div>
           <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-5 rounded-3xl space-y-3">
-            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Info Layanan</h3>
+            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">{t('infoService')}</h3>
             <div className="space-y-2.5">
               <div className="flex items-center gap-3"><Package size={16} className="text-violet-400" /><span className="text-slate-300">{customer.package?.name || '-'} {customer.package?.price ? `(${formatRupiah(customer.package.price)}/bln)` : ''}</span></div>
               <div className="flex items-center gap-3"><Router size={16} className="text-cyan-400" /><span className="text-slate-300">{customer.router?.name || '-'}</span></div>
@@ -386,8 +388,8 @@ export default function CustomerDetailPage() {
             </div>
             
             <div className="mt-3 pt-3 border-t border-white/5 grid grid-cols-2 gap-2 text-sm z-10">
-               <div><span className="text-gray-500 block mb-1 text-xs">Merk Modem/Router</span><strong className="text-gray-300">{customer.ont_merk || '-'}</strong></div>
-               <div><span className="text-gray-500 block mb-1 text-xs">Serial Number</span><strong className="text-gray-300 font-mono">{customer.ont_sn || '-'}</strong></div>
+               <div><span className="text-gray-500 block mb-1 text-xs">{t('modemBrand')}</span><strong className="text-gray-300">{customer.ont_merk || '-'}</strong></div>
+               <div><span className="text-gray-500 block mb-1 text-xs">{t('serialNumber')}</span><strong className="text-gray-300 font-mono">{customer.ont_sn || '-'}</strong></div>
             </div>
           </div>
           
@@ -396,7 +398,7 @@ export default function CustomerDetailPage() {
             <div className="md:col-span-2 bg-gradient-to-br from-indigo-900/30 to-purple-900/30 backdrop-blur-md border border-indigo-500/20 p-5 rounded-3xl space-y-4">
               <div className="flex justify-between items-center">
                 <h3 className="text-sm font-semibold text-indigo-300 uppercase tracking-wider flex items-center gap-2">
-                  <Activity size={16} /> Manajemen ONT (GenieACS TR-069)
+                  <Activity size={16} /> {t('ontManagement')}
                 </h3>
                 <button onClick={fetchAcsStatus} disabled={acsLoading} className="text-indigo-400 hover:text-indigo-300 transition-colors">
                   <RefreshCw size={16} className={acsLoading ? 'animate-spin' : ''} />
@@ -404,11 +406,11 @@ export default function CustomerDetailPage() {
               </div>
 
               {acsLoading && !acsStatus ? (
-                <div className="text-center py-4 text-gray-500 text-sm animate-pulse">Menghubungi GenieACS...</div>
+                <div className="text-center py-4 text-gray-500 text-sm animate-pulse">{t('connectingAcs')}</div>
               ) : acsStatus ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="bg-black/20 p-4 rounded-2xl border border-white/5 text-center">
-                    <p className="text-xs text-gray-400 mb-1">Redaman (Rx/Tx)</p>
+                    <p className="text-xs text-gray-400 mb-1">{t('attenuation')}</p>
                     <p className="text-xl font-bold text-white">
                       <span className={acsStatus.optical_rx < -25 ? 'text-red-400' : 'text-emerald-400'}>{acsStatus.optical_rx}</span>
                       <span className="text-gray-500 text-sm font-normal mx-1">/</span>
@@ -417,21 +419,21 @@ export default function CustomerDetailPage() {
                     <p className="text-[10px] text-gray-500 mt-1">dBm</p>
                   </div>
                   <div className="bg-black/20 p-4 rounded-2xl border border-white/5 text-center">
-                    <p className="text-xs text-gray-400 mb-1">Uptime</p>
+                    <p className="text-xs text-gray-400 mb-1">{t('uptime')}</p>
                     <p className="text-xl font-bold text-white">{acsStatus.uptime}</p>
                     <p className="text-[10px] text-emerald-400 mt-1 uppercase font-bold tracking-wider">{acsStatus.status}</p>
                   </div>
                   <div className="bg-black/20 p-4 rounded-2xl border border-white/5 flex flex-col justify-center gap-2">
                     <button onClick={handleAcsReboot} className="w-full py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-bold rounded-xl border border-red-500/20 transition-colors flex items-center justify-center gap-2">
-                      <RefreshCw size={12} /> Reboot Modem
+                      <RefreshCw size={12} /> {t('rebootModem')}
                     </button>
                     <button onClick={handleAcsWifi} className="w-full py-2 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 text-xs font-bold rounded-xl border border-indigo-500/20 transition-colors flex items-center justify-center gap-2">
-                      <Key size={12} /> Ganti WiFi
+                      <Key size={12} /> {t('changeWifi')}
                     </button>
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-4 text-red-400 text-sm">Gagal mengambil data dari ACS</div>
+                <div className="text-center py-4 text-red-400 text-sm">{t('acsFailed')}</div>
               )}
             </div>
           )}
@@ -441,19 +443,19 @@ export default function CustomerDetailPage() {
       {/* Invoice History */}
       <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden">
         <div className="p-5 border-b border-white/5">
-          <h3 className="font-bold text-lg text-white">Riwayat Tagihan</h3>
+          <h3 className="font-bold text-lg text-white">{t('invoiceHistory')}</h3>
         </div>
         {!customer.invoices || customer.invoices.length === 0 ? (
-          <div className="p-12 text-center text-gray-500">Belum ada tagihan.</div>
+          <div className="p-12 text-center text-gray-500">{t('noInvoices')}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-white/5 text-slate-400 text-xs uppercase tracking-wider">
-                  <th className="px-6 py-3 font-semibold">Periode</th>
-                  <th className="px-6 py-3 font-semibold">Jatuh Tempo</th>
-                  <th className="px-6 py-3 font-semibold">Nominal</th>
-                  <th className="px-6 py-3 font-semibold">Status</th>
+                  <th className="px-6 py-3 font-semibold">{t('period')}</th>
+                  <th className="px-6 py-3 font-semibold">{t('dueDate')}</th>
+                  <th className="px-6 py-3 font-semibold">{t('nominal')}</th>
+                  <th className="px-6 py-3 font-semibold">{t('status')}</th>
                   <th className="px-6 py-3 font-semibold text-right">Aksi</th>
                 </tr>
               </thead>
@@ -468,14 +470,14 @@ export default function CustomerDetailPage() {
                         inv.status === 'paid' ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20' : 'bg-amber-500/15 text-amber-400 border-amber-500/20'
                       }`}>
                         {inv.status === 'paid' ? <CheckCircle2 size={12} /> : <Clock size={12} />}
-                        {inv.status === 'paid' ? 'Lunas' : 'Belum Bayar'}
+                        {inv.status === 'paid' ? t('paid') : t('unpaid')}
                       </span>
                     </td>
                     <td className="px-6 py-3 text-right">
                       {inv.status === 'unpaid' && (
                         <button onClick={() => handlePay(inv.id)}
                           className="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 px-4 py-1.5 rounded-xl text-xs font-bold border border-emerald-500/20">
-                          Bayar
+                          {t('pay')}
                         </button>
                       )}
                       {inv.status === 'paid' && inv.paid_at && (

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Swal from '@/lib/swal';
 import { api, formatRupiah } from '@/lib/api';
 import { Receipt, Search, Filter, CheckCircle2, Clock, Zap, AlertCircle, Download, Printer } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface Invoice {
   id: number;
@@ -27,6 +28,7 @@ export default function BillingPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [generating, setGenerating] = useState(false);
+  const t = useTranslations('billing');
 
   const fetchInvoices = async () => {
     try {
@@ -43,7 +45,7 @@ export default function BillingPage() {
   useEffect(() => { fetchInvoices(); }, [search, statusFilter]);
 
   const handleGenerate = async () => {
-    if (!confirm('Generate tagihan bulan ini untuk semua pelanggan aktif?')) return;
+    if (!confirm(t('generateConfirm'))) return;
     setGenerating(true);
     try {
       const res = await api.post('/invoices/generate');
@@ -54,7 +56,7 @@ export default function BillingPage() {
   };
 
   const handlePay = async (id: number) => {
-    if (!confirm('Konfirmasi pembayaran tagihan ini?')) return;
+    if (!confirm(t('payConfirm'))) return;
     try {
       const res = await api.post(`/invoices/${id}/pay`);
       Swal.fire({text: res.message,   icon: 'info'});
@@ -83,52 +85,45 @@ export default function BillingPage() {
             <Receipt className="text-amber-400" size={24} />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">Tagihan & Pembayaran</h1>
-            <p className="text-sm text-gray-400">{invoices.length} tagihan</p>
+            <h1 className="text-2xl font-bold text-white">{t('title')}</h1>
+            <p className="text-sm text-gray-400">{t('subtitle', { count: invoices.length })}</p>
           </div>
         </div>
         <div className="flex gap-2">
-          <button 
-            onClick={handleExport}
-            className="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/20 px-4 py-2.5 rounded-2xl flex items-center space-x-2 font-medium transition-all"
-          >
+          <button onClick={handleExport}
+            className="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/20 px-4 py-2.5 rounded-2xl flex items-center space-x-2 font-medium transition-all">
             <Download size={18} />
-            <span className="hidden sm:inline">Export CSV</span>
+            <span className="hidden sm:inline">{t('exportCsv')}</span>
           </button>
-          <button 
-            onClick={handleGenerate}
-            disabled={generating}
-            className="bg-amber-600 hover:bg-amber-500 disabled:bg-amber-600/50 text-white px-5 py-2.5 rounded-2xl flex items-center space-x-2 font-semibold shadow-lg shadow-amber-600/20 transition-all active:scale-95"
-          >
+          <button onClick={handleGenerate} disabled={generating}
+            className="bg-amber-600 hover:bg-amber-500 disabled:bg-amber-600/50 text-white px-5 py-2.5 rounded-2xl flex items-center space-x-2 font-semibold shadow-lg shadow-amber-600/20 transition-all active:scale-95">
             <Zap size={18} />
-            <span>{generating ? 'Generating...' : 'Generate Tagihan'}</span>
+            <span>{generating ? t('generating') : t('generateInvoice')}</span>
           </button>
         </div>
       </div>
 
-      {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-5 rounded-3xl">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 rounded-xl bg-emerald-500/10"><CheckCircle2 className="text-emerald-400" size={20} /></div>
-            <span className="text-sm text-gray-400">Total Terbayar</span>
+            <span className="text-sm text-gray-400">{t('totalPaid')}</span>
           </div>
           <p className="text-2xl font-bold text-emerald-400">{formatRupiah(totalPaid)}</p>
         </div>
         <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-5 rounded-3xl">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 rounded-xl bg-red-500/10"><AlertCircle className="text-red-400" size={20} /></div>
-            <span className="text-sm text-gray-400">Total Tunggakan</span>
+            <span className="text-sm text-gray-400">{t('totalArrears')}</span>
           </div>
           <p className="text-2xl font-bold text-red-400">{formatRupiah(totalUnpaid)}</p>
         </div>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-          <input type="text" placeholder="Cari nama pelanggan..."
+          <input type="text" placeholder={t('searchPlaceholder')}
             className="w-full bg-slate-900/50 border border-white/10 text-white rounded-2xl py-2.5 pl-10 pr-4 outline-none focus:ring-2 focus:ring-blue-500/50 backdrop-blur-md"
             value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
@@ -136,32 +131,30 @@ export default function BillingPage() {
           <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
           <select
             className="bg-slate-900/50 border border-white/10 text-white rounded-2xl py-2.5 pl-10 pr-8 outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none backdrop-blur-md cursor-pointer"
-            value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option value="all">Semua Status</option>
-            <option value="unpaid">Belum Bayar</option>
-            <option value="paid">Lunas</option>
+            value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+            <option value="all">{t('allStatus')}</option>
+            <option value="unpaid">{t('unpaid')}</option>
+            <option value="paid">{t('paid')}</option>
           </select>
         </div>
       </div>
 
-      {/* Table */}
       <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden">
         {loading ? (
-          <div className="p-12 text-center text-gray-500 animate-pulse">Memuat tagihan...</div>
+          <div className="p-12 text-center text-gray-500 animate-pulse">{t('loading')}</div>
         ) : invoices.length === 0 ? (
-          <div className="p-12 text-center text-gray-500">Tidak ada data tagihan.</div>
+          <div className="p-12 text-center text-gray-500">{t('empty')}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-white/5 text-slate-400 text-xs uppercase tracking-wider">
-                  <th className="px-6 py-4 font-semibold">Pelanggan</th>
-                  <th className="px-6 py-4 font-semibold">Periode</th>
-                  <th className="px-6 py-4 font-semibold">Jatuh Tempo</th>
-                  <th className="px-6 py-4 font-semibold">Nominal</th>
-                  <th className="px-6 py-4 font-semibold">Status</th>
-                  <th className="px-6 py-4 font-semibold text-right">Aksi</th>
+                  <th className="px-6 py-4 font-semibold">{t('tableHeaders.customer')}</th>
+                  <th className="px-6 py-4 font-semibold">{t('tableHeaders.period')}</th>
+                  <th className="px-6 py-4 font-semibold">{t('tableHeaders.dueDate')}</th>
+                  <th className="px-6 py-4 font-semibold">{t('tableHeaders.nominal')}</th>
+                  <th className="px-6 py-4 font-semibold">{t('tableHeaders.status')}</th>
+                  <th className="px-6 py-4 font-semibold text-right">{t('tableHeaders.actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
@@ -183,28 +176,22 @@ export default function BillingPage() {
                     <td className="px-6 py-4 font-bold text-slate-200">{formatRupiah(inv.amount)}</td>
                     <td className="px-6 py-4">
                       <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold w-fit border ${
-                        inv.status === 'paid' 
-                          ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20' 
-                          : 'bg-amber-500/15 text-amber-400 border-amber-500/20'
+                        inv.status === 'paid' ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20' : 'bg-amber-500/15 text-amber-400 border-amber-500/20'
                       }`}>
                         {inv.status === 'paid' ? <CheckCircle2 size={12} /> : <Clock size={12} />}
-                        {inv.status === 'paid' ? 'Lunas' : 'Belum Bayar'}
+                        {inv.status === 'paid' ? t('paid') : t('unpaid')}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end space-x-2">
-                        <button
-                          onClick={() => handlePrintPdf(inv.id)}
-                          className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border border-blue-500/20 flex items-center gap-1"
-                        >
-                          <Printer size={14} /> PDF
+                        <button onClick={() => handlePrintPdf(inv.id)}
+                          className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border border-blue-500/20 flex items-center gap-1">
+                          <Printer size={14} /> {t('pdf')}
                         </button>
                         {inv.status === 'unpaid' && (
-                          <button
-                            onClick={() => handlePay(inv.id)}
-                            className="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 px-4 py-1.5 rounded-xl text-xs font-bold transition-all border border-emerald-500/20"
-                          >
-                            Bayar
+                          <button onClick={() => handlePay(inv.id)}
+                            className="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 px-4 py-1.5 rounded-xl text-xs font-bold transition-all border border-emerald-500/20">
+                            {t('pay')}
                           </button>
                         )}
                         {inv.status === 'paid' && inv.paid_at && (

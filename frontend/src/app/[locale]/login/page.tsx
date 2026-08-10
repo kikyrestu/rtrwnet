@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Wifi, Eye, EyeOff, Loader2, LogIn } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -11,6 +12,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const t = useTranslations('login');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +29,7 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.message || 'Login gagal');
+        setError(data.message || t('loginFailed'));
         setLoading(false);
         return;
       }
@@ -36,7 +38,7 @@ export default function LoginPage() {
       localStorage.setItem('user', JSON.stringify(data.user));
       router.push('/dashboard');
     } catch {
-      setError('Tidak dapat terhubung ke server.');
+      setError(t('connectionError'));
       setLoading(false);
     }
   };
@@ -59,15 +61,15 @@ export default function LoginPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-600/10 border border-blue-500/20 mb-4">
             <Wifi className="text-blue-400" size={32} />
           </div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">NET-GATEWAY</h1>
-          <p className="text-gray-500 mt-1">Sistem Manajemen RT/RW Net</p>
+          <h1 className="text-3xl font-bold text-white tracking-tight">{t('title')}</h1>
+          <p className="text-gray-500 mt-1">{t('subtitle')}</p>
         </div>
 
         {/* Login Card */}
         <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl shadow-black/20">
           <div className="mb-6">
-            <h2 className="text-xl font-bold text-white">Selamat Datang</h2>
-            <p className="text-sm text-gray-400 mt-1">Masuk ke dashboard untuk mengelola jaringan</p>
+            <h2 className="text-xl font-bold text-white">{t('welcome')}</h2>
+            <p className="text-sm text-gray-400 mt-1">{t('welcomeDesc')}</p>
           </div>
 
           {error && (
@@ -78,7 +80,7 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1.5">Email</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1.5">{t('email')}</label>
               <input
                 type="email"
                 value={email}
@@ -90,7 +92,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1.5">Password</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1.5">{t('password')}</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -116,9 +118,9 @@ export default function LoginPage() {
               className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 transition-all active:scale-[0.98]"
             >
               {loading ? (
-                <><Loader2 size={18} className="animate-spin" />Memproses...</>
+                <><Loader2 size={18} className="animate-spin" />{t('processing')}</>
               ) : (
-                <><LogIn size={18} />Masuk</>
+                <><LogIn size={18} />{t('loginButton')}</>
               )}
             </button>
           </form>
@@ -126,7 +128,7 @@ export default function LoginPage() {
 
         {/* Footer */}
         <p className="text-center text-gray-600 text-xs mt-6">
-          © {new Date().getFullYear()} NET-GATEWAY • RT/RW Net Management System
+          © {new Date().getFullYear()} NET-GATEWAY • {t('footer')}
         </p>
       </div>
     </div>

@@ -20,6 +20,9 @@ import {
   AreaChart,
   Area
 } from 'recharts';
+import { useRouter } from 'next/navigation';
+import Swal from '@/lib/swal';
+import { useTranslations } from 'next-intl';
 
 const StatCard = ({ title, value, icon: Icon, trend, color }: any) => (
   <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-6 rounded-3xl transition-transform hover:scale-[1.02]">
@@ -37,9 +40,6 @@ const StatCard = ({ title, value, icon: Icon, trend, color }: any) => (
     <h3 className="text-2xl font-bold text-white mt-1">{value}</h3>
   </div>
 );
-
-import { useRouter } from 'next/navigation';
-import Swal from '@/lib/swal';
 
 const formatYAxis = (tickItem: number) => {
     if (tickItem === 0) return '0';
@@ -67,57 +67,48 @@ export default function DashboardPage() {
     const [loading, setLoading] = useState(true);
     const [actionMenuOpen, setActionMenuOpen] = useState<number | null>(null);
     const router = useRouter();
+    const t = useTranslations('dashboard');
 
     const handleRemindInvoice = async (invoiceId: string | number) => {
         const result = await Swal.fire({
-            title: 'Kirim Reminder WA?',
-            text: "Pesan tagihan akan dikirimkan secara otomatis lewat WhatsApp.",
+            title: t('reminderTitle'),
+            text: t('reminderText'),
             icon: 'question',
             showCancelButton: true,
-            
-            confirmButtonText: 'Ya, Kirim!',
-            cancelButtonText: 'Batal',
-            
-            
+            confirmButtonText: t('reminderConfirm'),
+            cancelButtonText: t('reminderCancel'),
         });
 
         if (result.isConfirmed) {
             try {
-                Swal.fire({ title: 'Mengirim...', allowOutsideClick: false, didOpen: () => Swal.showLoading(),   });
+                Swal.fire({ title: t('reminderSending'), allowOutsideClick: false, didOpen: () => Swal.showLoading(),   });
                 await api.post(`/invoices/${invoiceId}/remind`, {});
-                Swal.fire({ title: 'Terkirim!', text: 'Sukses mengirim reminder WhatsApp!', icon: 'success',   });
+                Swal.fire({ title: t('reminderSent'), text: t('reminderSentText'), icon: 'success',   });
             } catch (err: any) {
-                // err logged
-                Swal.fire({ title: 'Gagal!', text: err.message || 'Terjadi kesalahan saat mengirim WA', icon: 'error',   });
+                Swal.fire({ title: t('reminderFailed'), text: err.message || t('reminderFailedText'), icon: 'error',   });
             }
         }
     };
 
     const handlePayInvoice = async (invoiceId: string | number) => {
         const result = await Swal.fire({
-            title: 'Konfirmasi Lunas?',
-            text: "Tagihan pelanggan ini akan ditandai LUNAS secara permanen.",
+            title: t('payTitle'),
+            text: t('payText'),
             icon: 'warning',
             showCancelButton: true,
-            
-            
-            confirmButtonText: 'Ya, Lunas!',
-            cancelButtonText: 'Batal',
-            
-            
+            confirmButtonText: t('payConfirm'),
+            cancelButtonText: t('payCancel'),
         });
 
         if (result.isConfirmed) {
             try {
-                Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading(),   });
+                Swal.fire({ title: t('payProcessing'), allowOutsideClick: false, didOpen: () => Swal.showLoading(),   });
                 await api.post(`/invoices/${invoiceId}/pay`, {});
-                // Refresh data
                 const res = await api.get('/dashboard-summary');
                 setData(res);
-                Swal.fire({ title: 'Lunas!', text: 'Pembayaran tagihan sukses dicatat!', icon: 'success',   });
+                Swal.fire({ title: t('paySuccess'), text: t('paySuccessText'), icon: 'success',   });
             } catch (err: any) {
-                // err logged
-                Swal.fire({ title: 'Gagal!', text: err.message || 'Terjadi kesalahan', icon: 'error',   });
+                Swal.fire({ title: t('payFailed'), text: err.message || t('payFailedText'), icon: 'error',   });
             }
         }
     };
@@ -129,7 +120,6 @@ export default function DashboardPage() {
                 setLoading(false);
             })
             .catch(err => {
-                // err logged
                 setLoading(false);
             });
     }, []);
@@ -145,39 +135,37 @@ export default function DashboardPage() {
 
     return (
       <div className="animate-in fade-in duration-500">
-        {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard 
-            title="Total Pendapatan (Bulan ini)" 
+            title={t('totalRevenue')} 
             value={formatRupiah(data.monthly_revenue)} 
             icon={TrendingUp} 
             color="bg-blue-500" 
           />
           <StatCard 
-            title="User Aktif" 
+            title={t('activeUsers')} 
             value={data.total_customers.toString()} 
             icon={Users} 
             color="bg-emerald-500" 
           />
           <StatCard 
-            title="Total Tunggakan" 
+            title={t('totalArrears')} 
             value={formatRupiah(data.total_tunggakan)} 
             icon={AlertCircle} 
             color="bg-red-500" 
           />
           <StatCard 
-            title="Paket Terlaris" 
+            title={t('bestPackage')} 
             value={data.paket_terlaris} 
             icon={Wifi} 
             color="bg-purple-500" 
           />
         </div>
 
-        {/* Middle Section: Chart & Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           <div className="lg:col-span-2 bg-slate-900/50 backdrop-blur-md border border-white/10 p-6 rounded-3xl flex flex-col">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="font-bold text-lg text-white">Statistik Revenue</h3>
+              <h3 className="font-bold text-lg text-white">{t('revenueStats')}</h3>
             </div>
             <div className="flex-1 w-full min-h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
@@ -189,42 +177,18 @@ export default function DashboardPage() {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
-                  <XAxis 
-                    dataKey="name" 
-                    stroke="#64748b" 
-                    fontSize={12} 
-                    tickLine={false} 
-                    axisLine={false} 
-                    tickMargin={10} 
-                  />
-                  <YAxis 
-                    stroke="#64748b" 
-                    fontSize={11} 
-                    tickLine={false} 
-                    axisLine={false} 
-                    tickFormatter={formatYAxis}
-                    width={80}
-                  />
-                  <Tooltip 
-                    content={<CustomTooltip />} 
-                    cursor={{ stroke: '#3b82f6', strokeWidth: 1, strokeDasharray: '4 4' }} 
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="amount" 
-                    stroke="#3b82f6" 
-                    strokeWidth={3} 
-                    fillOpacity={1} 
-                    fill="url(#colorAmount)"
-                    activeDot={{ r: 6, fill: "#3b82f6", stroke: "#fff", strokeWidth: 2, className: "animate-pulse" }}
-                  />
+                  <XAxis dataKey="name" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} tickMargin={10} />
+                  <YAxis stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} tickFormatter={formatYAxis} width={80} />
+                  <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#3b82f6', strokeWidth: 1, strokeDasharray: '4 4' }} />
+                  <Area type="monotone" dataKey="amount" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorAmount)"
+                    activeDot={{ r: 6, fill: "#3b82f6", stroke: "#fff", strokeWidth: 2, className: "animate-pulse" }} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </div>
 
           <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-6 rounded-3xl">
-            <h3 className="font-bold text-lg mb-4 text-white">Pemberitahuan Sistem</h3>
+            <h3 className="font-bold text-lg mb-4 text-white">{t('systemNotifications')}</h3>
             <div className="space-y-4">
               {data.notifications.map((notif: any, i: number) => (
                 <div key={i} className="flex items-start space-x-3 p-3 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors border border-transparent hover:border-white/5">
@@ -241,21 +205,20 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Recent Transactions / Users Table */}
         <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-3xl">
           <div className="p-6 flex justify-between items-center border-b border-white/5">
-            <h3 className="font-bold text-lg text-white">Status Pembayaran Terkini</h3>
+            <h3 className="font-bold text-lg text-white">{t('paymentStatus')}</h3>
           </div>
           <div className="overflow-x-auto min-h-[280px]">
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-white/5 text-slate-400 text-xs uppercase tracking-wider">
-                  <th className="px-6 py-4 font-semibold">Nama Pelanggan</th>
-                  <th className="px-6 py-4 font-semibold">Paket</th>
-                  <th className="px-6 py-4 font-semibold">Status</th>
-                  <th className="px-6 py-4 font-semibold">Tanggal</th>
-                  <th className="px-6 py-4 font-semibold">Jumlah</th>
-                  <th className="px-6 py-4 font-semibold text-right">Aksi</th>
+                  <th className="px-6 py-4 font-semibold">{t('customerName')}</th>
+                  <th className="px-6 py-4 font-semibold">{t('package')}</th>
+                  <th className="px-6 py-4 font-semibold">{t('status')}</th>
+                  <th className="px-6 py-4 font-semibold">{t('date')}</th>
+                  <th className="px-6 py-4 font-semibold">{t('amount')}</th>
+                  <th className="px-6 py-4 font-semibold text-right">{t('actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
@@ -302,23 +265,17 @@ export default function DashboardPage() {
                       
                       {actionMenuOpen === idx && (
                         <>
-                          <div 
-                            className="fixed inset-0 z-[998]" 
-                            onClick={(e) => { 
-                              e.stopPropagation(); 
-                              setActionMenuOpen(null); 
-                            }} 
-                          />
+                          <div className="fixed inset-0 z-[998]" onClick={(e) => { e.stopPropagation(); setActionMenuOpen(null); }} />
                           <div className="absolute right-8 top-12 w-56 bg-slate-800 border border-slate-700 shadow-2xl rounded-xl z-[999] py-2 origin-top-right text-left animate-in fade-in zoom-in duration-200">
                             <button onClick={(e) => { e.stopPropagation(); setActionMenuOpen(null); handleRemindInvoice(user.id); }} className="w-full text-left px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-700/50 hover:text-white transition-colors flex items-center gap-2">
-                              <span>💬</span> Kirim Reminder Tagihan
+                              <span>💬</span> {t('sendReminder')}
                             </button>
                             <button onClick={(e) => { e.stopPropagation(); setActionMenuOpen(null); handlePayInvoice(user.id); }} className="w-full text-left px-4 py-2.5 text-sm text-emerald-400 hover:bg-emerald-500/10 transition-colors flex items-center gap-2">
-                              <span>✔️</span> Konfirmasi Lunas
+                              <span>✔️</span> {t('confirmPaid')}
                             </button>
                             <div className="h-px bg-slate-700/50 my-1 mx-2"></div>
                             <button onClick={(e) => { e.stopPropagation(); setActionMenuOpen(null); router.push(`/billing/invoices/${user.id}`); }} className="w-full text-left px-4 py-2.5 text-sm text-slate-400 hover:bg-slate-700/50 hover:text-white transition-colors flex items-center gap-2">
-                              <span>📄</span> Lihat Detail / Invoice
+                              <span>📄</span> {t('viewDetail')}
                             </button>
                           </div>
                         </>

@@ -7,11 +7,13 @@ import {
   BarChart3, Network, Router, Radio, MapPin, RefreshCcw, MonitorCog,
   Package, Map, UserCog, ChevronDown, Boxes, ToggleRight,
   Ticket, Headphones, MessageCircle, ShieldOff, CreditCard,
-  UserCircle, Bell, ClipboardList, Database
+  UserCircle, Bell, ClipboardList, Database, Languages
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useState, useEffect } from 'react';
 import { useFeatureFlags } from '@/hooks/useFeatureFlags';
+import { useTranslations, useLocale } from 'next-intl';
+import { useRouter } from '@/i18n/routing';
 
 interface MenuItem {
   name: string;
@@ -26,6 +28,9 @@ export default function Sidebar() {
   const [openMenus, setOpenMenus] = useState<string[]>(['/network', '/settings']);
   const [user, setUser] = useState<any>(null);
   const { isEnabled } = useFeatureFlags();
+  const t = useTranslations('sidebar');
+  const locale = useLocale();
+  const router = useRouter();
 
   useEffect(() => {
     try {
@@ -37,39 +42,39 @@ export default function Sidebar() {
   const currentRole = user?.role || 'admin';
 
   const menuItems: MenuItem[] = [
-    { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, roles: ['admin', 'technician', 'sales', 'collector'] },
-    { name: 'Pelanggan', path: '/customers', icon: Users, roles: ['admin', 'technician', 'sales'] },
-    { name: 'Tagihan', path: '/billing', icon: Receipt, roles: ['admin', 'collector'] },
-    { name: 'Inventaris', path: '/inventory', icon: Boxes, roles: ['admin', 'technician'] },
-    ...(isEnabled('auto_suspend') ? [{ name: 'Auto Isolir', path: '/auto-suspend', icon: ShieldOff, roles: ['admin'] }] : []),
-    ...(isEnabled('payment_gateway') ? [{ name: 'Payment Gateway', path: '/payment-gateway', icon: CreditCard, roles: ['admin'] }] : []),
-    ...(isEnabled('ticketing') ? [{ name: 'Helpdesk', path: '/tickets', icon: Headphones, roles: ['admin', 'technician', 'sales'] }] : []),
-    ...(isEnabled('hotspot') ? [{ name: 'Hotspot', path: '/hotspot', icon: Ticket, roles: ['admin', 'sales'] }] : []),
-    ...(isEnabled('whatsapp') ? [{ name: 'WhatsApp', path: '/whatsapp', icon: MessageCircle, roles: ['admin'] }] : []),
-    ...(isEnabled('client_portal') ? [{ name: 'Portal Pelanggan', path: '/client-portal', icon: UserCircle, roles: ['admin'] }] : []),
-    ...(isEnabled('nms_alert') ? [{ name: 'NMS Alert', path: '/nms', icon: Bell, roles: ['admin', 'technician'] }] : []),
-    { name: 'Laporan', path: '/reports', icon: BarChart3, roles: ['admin', 'sales', 'collector'] },
+    { name: t('dashboard'), path: '/dashboard', icon: LayoutDashboard, roles: ['admin', 'technician', 'sales', 'collector'] },
+    { name: t('customers'), path: '/customers', icon: Users, roles: ['admin', 'technician', 'sales'] },
+    { name: t('billing'), path: '/billing', icon: Receipt, roles: ['admin', 'collector'] },
+    { name: t('inventory'), path: '/inventory', icon: Boxes, roles: ['admin', 'technician'] },
+    ...(isEnabled('auto_suspend') ? [{ name: t('autoIsolir'), path: '/auto-suspend', icon: ShieldOff, roles: ['admin'] }] : []),
+    ...(isEnabled('payment_gateway') ? [{ name: t('paymentGateway'), path: '/payment-gateway', icon: CreditCard, roles: ['admin'] }] : []),
+    ...(isEnabled('ticketing') ? [{ name: t('helpdesk'), path: '/tickets', icon: Headphones, roles: ['admin', 'technician', 'sales'] }] : []),
+    ...(isEnabled('hotspot') ? [{ name: t('hotspot'), path: '/hotspot', icon: Ticket, roles: ['admin', 'sales'] }] : []),
+    ...(isEnabled('whatsapp') ? [{ name: t('whatsapp'), path: '/whatsapp', icon: MessageCircle, roles: ['admin'] }] : []),
+    ...(isEnabled('client_portal') ? [{ name: t('portalPelanggan'), path: '/client-portal', icon: UserCircle, roles: ['admin'] }] : []),
+    ...(isEnabled('nms_alert') ? [{ name: t('nmsAlert'), path: '/nms', icon: Bell, roles: ['admin', 'technician'] }] : []),
+    { name: t('reports'), path: '/reports', icon: BarChart3, roles: ['admin', 'sales', 'collector'] },
     { 
-      name: 'Jaringan', path: '/network', icon: Network, roles: ['admin', 'technician'],
+      name: t('network'), path: '/network', icon: Network, roles: ['admin', 'technician'],
       children: [
-        { name: 'Topologi (GIS)', path: '/network/map', icon: Map },
-        { name: 'Router Mikrotik', path: '/network/routers', icon: Router },
-        { name: 'Monitor', path: '/network/monitor', icon: MonitorCog },
-        { name: 'OLT Induk', path: '/network/olt', icon: Radio },
-        { name: 'ODP / Tiang', path: '/network/odp', icon: MapPin },
-        { name: 'Sinkronisasi', path: '/network/sync', icon: RefreshCcw },
+        { name: t('networkTopology'), path: '/network/map', icon: Map },
+        { name: t('networkRouters'), path: '/network/routers', icon: Router },
+        { name: t('networkMonitor'), path: '/network/monitor', icon: MonitorCog },
+        { name: t('networkOlt'), path: '/network/olt', icon: Radio },
+        { name: t('networkOdp'), path: '/network/odp', icon: MapPin },
+        { name: t('networkSync'), path: '/network/sync', icon: RefreshCcw },
       ]
     },
     { 
-      name: 'Pengaturan', path: '/settings', icon: Settings, roles: ['admin'],
+      name: t('settings'), path: '/settings', icon: Settings, roles: ['admin'],
       children: [
-        { name: 'Profil ISP', path: '/settings/profile', icon: UserCircle },
-        { name: 'Paket Internet', path: '/settings/packages', icon: Package },
-        { name: 'Wilayah', path: '/settings/regions', icon: Map },
-        { name: 'Pengguna & RBAC', path: '/settings/users', icon: UserCog },
-        { name: 'Fitur & Modul', path: '/settings/features', icon: ToggleRight },
-        { name: 'Audit Logs', path: '/settings/audit-logs', icon: ClipboardList },
-        { name: 'Backup & Restore', path: '/settings/backups', icon: Database },
+        { name: t('settingsProfile'), path: '/settings/profile', icon: UserCircle },
+        { name: t('settingsPackages'), path: '/settings/packages', icon: Package },
+        { name: t('settingsRegions'), path: '/settings/regions', icon: Map },
+        { name: t('settingsUsers'), path: '/settings/users', icon: UserCog },
+        { name: t('settingsFeatures'), path: '/settings/features', icon: ToggleRight },
+        { name: t('settingsAuditLogs'), path: '/settings/audit-logs', icon: ClipboardList },
+        { name: t('settingsBackups'), path: '/settings/backups', icon: Database },
       ]
     },
   ];
@@ -80,6 +85,11 @@ export default function Sidebar() {
     );
   };
 
+  const switchLocale = () => {
+    const newLocale = locale === 'id' ? 'en' : 'id';
+    router.replace(pathname, { locale: newLocale });
+  };
+
   return (
     <aside className="w-64 border-r border-white/10 p-6 flex flex-col z-20 fixed top-0 left-0 h-screen bg-black/40 backdrop-blur-xl">
       <div className="flex items-center space-x-3 mb-10 px-2">
@@ -87,7 +97,7 @@ export default function Sidebar() {
           <Wifi className="text-white" size={24} />
         </div>
         <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
-          NET-GATEWAY
+          {t('brand')}
         </h1>
       </div>
 
@@ -168,7 +178,20 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div className="mt-auto pt-6 border-t border-white/5 space-y-3">
+      {/* Language Switcher */}
+      <div className="pt-3 border-t border-white/5">
+        <button 
+          onClick={switchLocale}
+          className="w-full flex items-center justify-center gap-2 p-2.5 rounded-xl text-gray-400 hover:bg-white/5 hover:text-white border border-white/10 hover:border-white/20 transition-all text-sm font-medium group"
+        >
+          <Languages size={16} className="group-hover:text-blue-400 transition-colors" />
+          <span className="text-xs font-semibold bg-white/5 px-2.5 py-1 rounded-lg border border-white/10 group-hover:border-blue-500/30 group-hover:bg-blue-500/10 group-hover:text-blue-400 transition-all">
+            {locale === 'id' ? 'EN' : 'ID'}
+          </span>
+        </button>
+      </div>
+
+      <div className="pt-3 border-t border-white/5 space-y-3">
         <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-2xl">
           <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-blue-800 border border-white/10 flex items-center justify-center text-white font-bold text-sm">
             {(user?.name || 'A').charAt(0).toUpperCase()}
