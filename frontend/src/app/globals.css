@@ -19,15 +19,42 @@
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 767px) {
+  .responsive-table thead { display: none; }
+  .responsive-table tr {
+    display: block;
+    margin-bottom: 1rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(15,23,42,0.6);
+    padding: 1rem;
+  }
+  .responsive-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    min-height: 44px;
+    font-size: 0.875rem;
+  }
+  .responsive-table td:last-child { border-bottom: none; }
+  .responsive-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #94a3b8;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-right: 0.75rem;
+    flex-shrink: 0;
+  }
+  .responsive-table .cell-full { justify-content: flex-start; padding-left: 0; }
+  .responsive-table .cell-full::before { display: none; }
+  .responsive-table .cell-actions { justify-content: flex-end; border-bottom: none; }
+  .responsive-table .cell-actions::before { display: none; }
 }
 
-/* Dark dropdown styling */
-select,
-select option {
-  background-color: #0f172a;
-  color: #e2e8f0;
-}
+.tap-target { min-height: 44px; min-width: 44px; }
+.has-bottom-nav { padding-bottom: 5rem; }

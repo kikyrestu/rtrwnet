@@ -349,7 +349,7 @@ export default function MonitorPage() {
               <div className="p-12 text-center text-gray-500">Tidak ada sesi PPPoE aktif.</div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left">
+                <table className="responsive-table w-full text-left">
                   <thead>
                     <tr className="bg-white/5 text-slate-400 text-xs uppercase tracking-wider">
                       <th className="px-5 py-3 font-semibold">Username</th>
@@ -388,7 +388,7 @@ export default function MonitorPage() {
               </h3>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left">
+              <table className="responsive-table w-full text-left">
                 <thead>
                   <tr className="bg-white/5 text-slate-400 text-xs uppercase tracking-wider">
                     <th className="px-5 py-3 font-semibold">Interface</th>

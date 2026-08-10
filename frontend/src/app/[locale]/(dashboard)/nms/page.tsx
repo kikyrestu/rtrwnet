@@ -98,7 +98,7 @@ export default function NmsAlertPage() {
           <h2 className="text-lg font-bold text-white flex items-center gap-2"><Activity size={18} className="text-gray-400" /> Daftar Perangkat</h2>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="responsive-table w-full text-sm">
             <thead><tr className="border-b border-white/10 text-gray-400 text-xs uppercase tracking-wider">
               <th className="text-left p-4">Device</th><th className="text-left p-4">IP</th>
               <th className="text-center p-4">Status</th><th className="text-center p-4">Latency</th><th className="text-center p-4">Uptime</th>

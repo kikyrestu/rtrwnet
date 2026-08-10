@@ -210,7 +210,7 @@ export default function DashboardPage() {
             <h3 className="font-bold text-lg text-white">{t('paymentStatus')}</h3>
           </div>
           <div className="overflow-x-auto min-h-[280px]">
-            <table className="w-full text-left">
+            <table className="responsive-table w-full text-left">
               <thead>
                 <tr className="bg-white/5 text-slate-400 text-xs uppercase tracking-wider">
                   <th className="px-6 py-4 font-semibold">{t('customerName')}</th>

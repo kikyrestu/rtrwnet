@@ -97,7 +97,7 @@ export default function AuditLogsPage() {
           <div className="p-12 text-center text-gray-500">Tidak ada catatan aktivitas.</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
+            <table className="responsive-table w-full text-left text-sm">
               <thead>
                 <tr className="bg-white/5 text-slate-400 text-xs uppercase tracking-wider">
                   <th className="px-6 py-4 font-semibold">Waktu</th>

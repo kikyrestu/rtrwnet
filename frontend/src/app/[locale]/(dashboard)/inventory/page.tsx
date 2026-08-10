@@ -244,7 +244,7 @@ export default function InventoryPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="responsive-table w-full text-sm">
               <thead>
                 <tr className="border-b border-white/10 text-gray-400 text-xs uppercase tracking-wider">
                   <th className="text-left p-4">Item</th>

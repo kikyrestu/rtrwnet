@@ -189,7 +189,7 @@ export default function HotspotPage() {
             {loading ? <div className="flex items-center justify-center py-20"><Loader2 className="animate-spin text-blue-400" size={28} /></div> :
             vouchers.length === 0 ? <div className="text-center py-20 text-gray-500"><Ticket size={48} className="mx-auto mb-3 opacity-30" /><p>Belum ada voucher.</p></div> : (
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="responsive-table w-full text-sm">
                   <thead><tr className="border-b border-white/10 text-gray-400 text-xs uppercase tracking-wider">
                     <th className="text-left p-4">Kode</th><th className="text-left p-4">Username</th><th className="text-left p-4">Password</th>
                     <th className="text-left p-4">Profil</th><th className="text-center p-4">Status</th><th className="text-right p-4">Harga</th><th className="text-center p-4">Aksi</th>

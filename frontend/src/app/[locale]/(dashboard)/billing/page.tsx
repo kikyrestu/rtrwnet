@@ -146,7 +146,7 @@ export default function BillingPage() {
           <div className="p-12 text-center text-gray-500">{t('empty')}</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
+            <table className="responsive-table w-full text-left">
               <thead>
                 <tr className="bg-white/5 text-slate-400 text-xs uppercase tracking-wider">
                   <th className="px-6 py-4 font-semibold">{t('tableHeaders.customer')}</th>

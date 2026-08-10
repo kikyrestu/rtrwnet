@@ -132,7 +132,7 @@ export default function InvoiceDetailPage() {
 
         {/* Table */}
         <div className="p-8 sm:p-12">
-          <table className="w-full text-left">
+          <table className="responsive-table w-full text-left">
             <thead>
               <tr className="border-b-2 border-slate-200">
                 <th className="py-3 text-sm font-bold text-slate-400 uppercase tracking-wider">Deskripsi Layanan</th>

@@ -100,7 +100,7 @@ export default function UsersPage() {
           <div className="p-12 text-center text-gray-500">Belum ada pengguna.</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
+            <table className="responsive-table w-full text-left">
               <thead>
                 <tr className="bg-white/5 text-slate-400 text-xs uppercase tracking-wider">
                   <th className="px-6 py-4 font-semibold">Pengguna</th>
