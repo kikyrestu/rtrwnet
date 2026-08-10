@@ -149,7 +149,7 @@ export default function WhatsAppPage() {
         const data = await res.json();
         alert(data.message);
         setShowBroadcastForm(false);
-        setBroadcastForm({ template_id: '', customer_ids: [] });
+        setBroadcastForm({ template_id: '', customer_ids: [], delay: '', schedule: '' });
         setSelectAll(false);
         setTab('logs');
         fetchData();
